@@ -100,7 +100,7 @@ class Jogo:
         if event.type == pygame.QUIT:
             self.run = False
 
-        if event.type in (KEYDOWN, KEYUP):
+        if event.type == pygame.KEYDOWN:
             key = event.key
             if key == K_ESCAPE:
                 self.run = False
@@ -292,3 +292,4 @@ class Tiro(ElementoSprite):
 if __name__ == '__main__':
     J = Jogo()
     J.loop()
+    pygame.quit()
