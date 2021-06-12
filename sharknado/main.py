@@ -384,4 +384,4 @@ class Tiro(ElementoSprite):
 if __name__ == '__main__':
     I= Inicio ()
     I.main_loop()
-    pygame.quit()
+pygame.quit()
