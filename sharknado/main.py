@@ -15,12 +15,10 @@ import random
 
 class Inicio: # menu
   def __init__(self, size=(1200, 680), fullscreen=False):
+        self.elementos = {}
         pygame.init()
         self.tela = pygame.display.set_mode(size, flags=False, depth=16)
         self.fundo = Fundo()
-        self.jogador = None
-        self.interval = 0
-        self.nivel = 0
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -93,7 +91,7 @@ class Jogo:
         self.fundo = Fundo()
         self.jogador = None
         self.interval = 0
-        self.nivel = 0
+        self.nivel = 1
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -176,9 +174,6 @@ class Jogo:
             key = event.key
             if key == K_ESCAPE:
                 self.run = False
-            elif key in (K_LCTRL, K_RCTRL):
-                self.interval = 0
-                self.jogador.atira(self.elementos["tiros"])
             elif key == K_UP:
                 self.jogador.accel_top()
             elif key == K_DOWN:
@@ -187,6 +182,12 @@ class Jogo:
                 self.jogador.accel_right()
             elif key == K_LEFT:
                 self.jogador.accel_left()
+                
+        if event.type == pygame.KEYUP:
+            key = event.key
+            if key in (K_LCTRL, K_RCTRL):
+                self.interval = 0
+                self.jogador.atira(self.elementos["tiros"])
 
         keys = pygame.key.get_pressed()
         if self.interval > 10:
@@ -209,6 +210,7 @@ class Jogo:
             self.trata_eventos()
             self.ação_elemento()
             self.manutenção()
+            
             # Atualiza Elementos
             self.atualiza_elementos(dt)
 
