@@ -6,12 +6,84 @@ from pygame.locals import (DOUBLEBUF,
                            K_LEFT,
                            K_RIGHT,
                            QUIT,
-                           K_ESCAPE, K_UP, K_DOWN, K_RCTRL, K_LCTRL
+                           K_ESCAPE, K_UP, K_DOWN, K_RCTRL, K_LCTRL,
+                           K_1, K_2
                            )
 from fundo import Fundo
 from elementos import ElementoSprite
 import random
 
+class Inicio: # menu
+  def __init__(self, size=(1200, 680), fullscreen=False):
+        pygame.init()
+        self.tela = pygame.display.set_mode(size, flags=False, depth=16)
+        self.fundo = Fundo()
+        self.jogador = None
+        self.interval = 0
+        self.nivel = 0
+        flags = DOUBLEBUF
+        if fullscreen:
+            flags |= FULLSCREEN
+
+        self.screen_size = self.tela.get_size()
+        pygame.mouse.set_visible(0)
+        pygame.display.set_caption('Sharknado')
+        self.run = True
+  
+  def desenha_letras(self):
+      fonte_titulo = pygame.font.SysFont ("arialblack",75)
+      texto_titulo = fonte_titulo.render("MENU",True, (0,0,0))
+      screen = pygame.display.get_surface()
+      screen.blit(texto_titulo,(450,50)) 
+      
+      button_1 = pygame.Rect(200,300,650,50)
+      button_2 = pygame.Rect(200,400,650,50)
+      pygame.draw.rect(screen, (255,255,255), button_1)
+      pygame.draw.rect(screen, (255,255,255), button_2)
+      
+      fonte_btn_1 = pygame.font.SysFont ("arialblack",30)
+      texto_btn_1 = fonte_btn_1.render("Para acessar o jogo, pressione 1",True, (0,0,0))
+      screen = pygame.display.get_surface()
+      screen.blit(texto_btn_1,(210,300))
+
+      fonte_btn_2 = pygame.font.SysFont ("arialblack",30)
+      texto_btn_2 = fonte_btn_2.render("Para acessar as regras, pressione 2",True, (0,0,0))
+      screen = pygame.display.get_surface()
+      screen.blit(texto_btn_2,(210,400))
+
+  def atualiza_menu(self, dt):
+        self.fundo.update(dt)
+        for v in self.elementos.values():
+            v.update(dt)
+
+  def desenha_menu(self):
+        self.fundo.draw(self.tela)
+        for v in self.elementos.values():
+            v.draw(self.tela)
+
+  def main_loop(self):
+     clock = pygame.time.Clock()
+     dt = 16 
+     while self.run:
+        clock.tick(1000 / dt)
+
+        self.atualiza_menu(dt)
+        self.desenha_menu()
+        self.desenha_letras()
+        
+        
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                if event.key == K_1:
+                    if __name__ == '__main__':
+                        J= Jogo ()
+                        J.loop()
+                             
+        pygame.display.flip()  
 
 class Jogo:
     def __init__(self, size=(1000, 1000), fullscreen=False):
@@ -310,6 +382,6 @@ class Tiro(ElementoSprite):
 
 
 if __name__ == '__main__':
-    J = Jogo()
-    J.loop()
+    I= Inicio ()
+    I.main_loop()
     pygame.quit()
