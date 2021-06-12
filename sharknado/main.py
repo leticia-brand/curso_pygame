@@ -202,6 +202,7 @@ class Jogo:
         self.elementos['jogador'] = pygame.sprite.RenderPlain(self.jogador)
         self.elementos['tiros'] = pygame.sprite.RenderPlain()
         self.elementos['tiros_inimigo'] = pygame.sprite.RenderPlain()
+        self.musica()
         while self.run:
             clock.tick(1000 / dt)
 
@@ -235,6 +236,11 @@ class Jogo:
       texto = fonte.render(f"Nível: {self.nivel}", True, (255,0,0))
       screen = pygame.display.get_surface()
       screen.blit(texto,(0,50))
+
+    def musica(self):
+      pygame.mixer.music.load("imagens/shark_song.mp3")
+#      pygame.mixer.music.load("imagens/shark_song2.mp3")
+      pygame.mixer.music.play(-1)
 
 class Nave(ElementoSprite):
     def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[83, 248]):
