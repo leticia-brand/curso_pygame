@@ -141,8 +141,28 @@ class Jogo:
 
             # Desenhe no back buffer
             self.desenha_elementos()
+            self.desenha_vidas()
+            self.desenha_pontos()
+            self.desenha_nivel()
             pygame.display.flip()
 
+    def desenha_vidas(self):
+      fonte = pygame.font.SysFont ("arialblack",24)
+      texto = fonte.render(f"Vidas: {self.jogador.lives}", True, (255,0,0))
+      screen = pygame.display.get_surface()
+      screen.blit(texto,(0,0))
+
+    def desenha_pontos(self):
+      fonte = pygame.font.SysFont ("arialblack",24)
+      texto = fonte.render(f"Pontos: {self.jogador.pontos}", True, (255,0,0))
+      screen = pygame.display.get_surface()
+      screen.blit(texto,(0,25))
+
+    def desenha_nivel(self):
+      fonte = pygame.font.SysFont ("arialblack",24)
+      texto = fonte.render(f"Nível: {self.nivel}", True, (255,0,0))
+      screen = pygame.display.get_surface()
+      screen.blit(texto,(0,50))
 
 class Nave(ElementoSprite):
     def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[83, 248]):
