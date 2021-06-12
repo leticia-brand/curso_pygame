@@ -28,7 +28,7 @@ class Jogo:
 
         self.screen_size = self.tela.get_size()
         pygame.mouse.set_visible(0)
-        pygame.display.set_caption('Corona Shooter')
+        pygame.display.set_caption('Sharknado')
         self.run = True
 
     def manutenção(self):
@@ -148,7 +148,7 @@ class Nave(ElementoSprite):
     def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[83, 248]):
         self.acceleration = [3, 3]
         if not image:
-            image = "seringa.png"
+            image = "barco.png"
         super().__init__(image, position, speed, new_size)
         self.set_lives(lives)
 
@@ -199,7 +199,7 @@ class Nave(ElementoSprite):
 class Virus(Nave):
     def __init__(self, position, lives=1, speed=None, image=None, size=(100, 100)):
         if not image:
-            image = "virus.png"
+            image = "tubarao.png"
         super().__init__(position, lives, speed, image, size)
 
 
@@ -216,7 +216,7 @@ class Jogador(Nave):
 
     def __init__(self, position, lives=10, image=None, new_size=[83, 248]):
         if not image:
-            image = "seringa.png"
+            image = "barco.png"
         super().__init__(position, lives, [0, 0], image, new_size)
         self.pontos = 0
 
@@ -283,7 +283,7 @@ class Jogador(Nave):
 class Tiro(ElementoSprite):
     def __init__(self, position, speed=None, image=None, list=None):
         if not image:
-            image = "tiro.png"
+            image = "arpao.png"
         super().__init__(image, position, speed)
         if list is not None:
             self.add(list)
