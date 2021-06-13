@@ -7,7 +7,7 @@ from pygame.locals import (DOUBLEBUF,
                            K_RIGHT,
                            QUIT,
                            K_ESCAPE, K_UP, K_DOWN, K_RCTRL, K_LCTRL,
-                           K_KP_ENTER
+                           K_KP_ENTER,K_RETURN
                            )
 from fundo import Fundo
 from elementos import ElementoSprite
@@ -64,7 +64,7 @@ class Inicio: # menu
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     pygame.quit()
-                if event.key == K_1:
+                if event.key == K_RETURN:
                     if __name__ == '__main__':
                         J= Jogo ()
                         J.loop()
