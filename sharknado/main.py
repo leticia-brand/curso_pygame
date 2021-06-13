@@ -112,14 +112,14 @@ class Jogo:
 
     def muda_nivel(self):
         xp = self.jogador.get_pontos()
-        if xp > 10 and self.level == 0:
-            self.fundo = Fundo("tile2.png")
-            self.nivel = 1
-            self.jogador.set_lives(self.jogador.get_lives() + 3)
-        elif xp > 50 and self.level == 1:
-            self.fundo = Fundo("tile3.png")
+        if xp > 10 and self.nivel == 1:
+            self.fundo = Fundo("mar2.png")
             self.nivel = 2
-            self.jogador.set_lives(self.player.get_lives() + 6)
+            self.jogador.set_lives(self.jogador.get_lives() + 3)
+        elif xp > 50 and self.nivel == 2:
+            self.fundo = Fundo("mar.png")
+            self.nivel = 3
+            self.jogador.set_lives(self.jogador.get_lives() + 6)
 
     def atualiza_elementos(self, dt):
         self.fundo.update(dt)
