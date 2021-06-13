@@ -12,13 +12,15 @@ from pygame.locals import (DOUBLEBUF,
 from fundo import Fundo
 from elementos import ElementoSprite
 import random
+import math
+
 
 class Inicio: # menu
   def __init__(self, size=(1200, 680), fullscreen=False):
         self.elementos = {}
         pygame.init()
         self.tela = pygame.display.set_mode(size, flags=False, depth=16)
-        self.fundo = Fundo()
+        self.fundo = Fundo(image="mar_menu.png")
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -34,20 +36,8 @@ class Inicio: # menu
       screen = pygame.display.get_surface()
       screen.blit(texto_titulo,(450,50)) 
       
-      button_1 = pygame.Rect(200,300,650,50)
-      button_2 = pygame.Rect(200,400,650,50)
-      pygame.draw.rect(screen, (255,255,255), button_1)
-      pygame.draw.rect(screen, (255,255,255), button_2)
-      
-      fonte_btn_1 = pygame.font.SysFont ("arialblack",30)
-      texto_btn_1 = fonte_btn_1.render("Para acessar o jogo, pressione 1",True, (0,0,0))
-      screen = pygame.display.get_surface()
-      screen.blit(texto_btn_1,(210,300))
-
-      fonte_btn_2 = pygame.font.SysFont ("arialblack",30)
-      texto_btn_2 = fonte_btn_2.render("Para acessar as regras, pressione 2",True, (0,0,0))
-      screen = pygame.display.get_surface()
-      screen.blit(texto_btn_2,(210,400))
+      imagem = pygame.image.load ("imagens/instrucoes4.png")
+      screen.blit(imagem, (100,200))
 
   def atualiza_menu(self, dt):
         self.fundo.update(dt)
@@ -64,11 +54,9 @@ class Inicio: # menu
      dt = 16 
      while self.run:
         clock.tick(1000 / dt)
-
         self.atualiza_menu(dt)
         self.desenha_menu()
         self.desenha_letras()
-        
         
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -77,6 +65,10 @@ class Inicio: # menu
                 if event.key == K_ESCAPE:
                     pygame.quit()
                 if event.key == K_1:
+                    if __name__ == '__main__':
+                        J= Jogo ()
+                        J.loop()
+                if event.key == (K_KP1):
                     if __name__ == '__main__':
                         J= Jogo ()
                         J.loop()
