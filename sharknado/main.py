@@ -7,7 +7,7 @@ from pygame.locals import (DOUBLEBUF,
                            K_RIGHT,
                            QUIT,
                            K_ESCAPE, K_UP, K_DOWN, K_RCTRL, K_LCTRL,
-                           K_1, K_2, K_KP!, K_KP2
+                           K_1, K_2, K_KP1, K_KP2
                            )
 from fundo import Fundo
 from elementos import ElementoSprite
@@ -231,14 +231,14 @@ class Jogo:
       fonte = pygame.font.SysFont ("arialblack",24)
       texto = fonte.render(f"Nível: {self.nivel}", True, (255,0,0))
       screen = pygame.display.get_surface()
-      screen.blit(texto,(30,(30, int(self.screen_size[1] * 0.12)))
+      screen.blit(texto,(30, int(self.screen_size[1] * 0.12)))
 
 #    def musica(self):
 #      pygame.mixer.music.load("imagens/shark_song.mp3")
 #      pygame.mixer.music.load("imagens/shark_song2.mp3")
 #      pygame.mixer.music.play(-1)
 
-class Nave(ElementoSprite):
+class Nave (ElementoSprite):
     def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[40, 100],new_angle=None):
         self.acceleration = [5, 5]
         if not image:
@@ -366,8 +366,8 @@ class Jogador(Nave):
         for s in speeds:
             Tiro(p, s, image, lista_de_tiros,[15,100],angle)
 
-    def get_fire_speed(self, shots):
-        speeds = []
+    def get_fire_speed(self, shots,direction):
+        speeds=[]
 
         if shots <= 0:
             return speeds

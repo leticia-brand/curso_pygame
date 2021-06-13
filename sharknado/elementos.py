@@ -7,14 +7,17 @@ class ElementoSprite(pygame.sprite.Sprite):
     Esta é a classe básica de todos os objetos do jogo.
     """
 
-    def __init__(self, image, position, speed=None, new_size=None):
+    def __init__(self, image, position, speed=None, new_size=None,new_angle=None):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
+        self.angle=0
         if isinstance(self.image, str):
             self.image = os.path.join('imagens', self.image)
             self.image = pygame.image.load(self.image)
         if new_size:
             self.scale(new_size)
+        if new_angle:
+            self.rotate_inicial(new_angle)
         self.rect = self.image.get_rect()
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
@@ -51,3 +54,13 @@ class ElementoSprite(pygame.sprite.Sprite):
 
     def scale(self, new_size):
         self.image = pygame.transform.scale(self.image, new_size)
+
+    def get_angle(self):
+        return self.angle
+
+    def rotate_inicial(self, new_angle):
+        self.image = pygame.transform.rotate(self.image, new_angle)
+        
+    def rotate(self, old_angle, new_angle):
+        self.image = pygame.transform.rotate(self.image, new_angle - old_angle)
+        self.angle = new_angle
