@@ -7,7 +7,7 @@ from pygame.locals import (DOUBLEBUF,
                            K_RIGHT,
                            QUIT,
                            K_ESCAPE, K_UP, K_DOWN, K_RCTRL, K_LCTRL,
-                           K_1, K_2, K_KP1, K_KP2
+                           K_KP_ENTER
                            )
 from fundo import Fundo
 from elementos import ElementoSprite
@@ -68,10 +68,10 @@ class Inicio: # menu
                     if __name__ == '__main__':
                         J= Jogo ()
                         J.loop()
-                if event.key == (K_KP1):
+                if event.key == (K_KP_ENTER):
                     if __name__ == '__main__':
                         J= Jogo ()
-                        J.loop()
+                        J.loop()   
                              
         pygame.display.flip()  
 
