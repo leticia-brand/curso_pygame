@@ -7,7 +7,7 @@ from pygame.locals import (DOUBLEBUF,
                            K_RIGHT,
                            QUIT,
                            K_ESCAPE, K_UP, K_DOWN, K_RCTRL, K_LCTRL,
-                           K_1, K_2
+                           K_1, K_2, K_KP!, K_KP2
                            )
 from fundo import Fundo
 from elementos import ElementoSprite
@@ -16,7 +16,7 @@ import math
 
 
 class Inicio: # menu
-  def __init__(self, size=(1200, 680), fullscreen=False):
+  def __init__(self, size=(1000, 600), fullscreen=False):
         self.elementos = {}
         pygame.init()
         self.tela = pygame.display.set_mode(size, flags=False, depth=16)
@@ -34,7 +34,7 @@ class Inicio: # menu
       fonte_titulo = pygame.font.SysFont ("arialblack",75)
       texto_titulo = fonte_titulo.render("MENU",True, (0,0,0))
       screen = pygame.display.get_surface()
-      screen.blit(texto_titulo,(450,50)) 
+      screen.blit(texto_titulo,(380,50)) 
       
       imagem = pygame.image.load ("imagens/instrucoes4.png")
       screen.blit(imagem, (100,200))
@@ -76,7 +76,7 @@ class Inicio: # menu
         pygame.display.flip()  
 
 class Jogo:
-    def __init__(self, size=(1000, 1000), fullscreen=False):
+    def __init__(self, size=(1200, 680), fullscreen=False):
         self.elementos = {}
         pygame.init()
         self.tela = pygame.display.set_mode(size)
@@ -175,36 +175,38 @@ class Jogo:
             elif key == K_LEFT:
                 self.jogador.accel_left()
                 
+        if self.interval > 30:
+            if event.type == pygame.KEYUP:
+                key = event.key
+                if key in (K_LCTRL, K_RCTRL):
+                    self.interval = 0
+                    self.jogador.atira(self.elementos["tiros"])
+       
         if event.type == pygame.KEYUP:
             key = event.key
-            if key in (K_LCTRL, K_RCTRL):
-                self.interval = 0
-                self.jogador.atira(self.elementos["tiros"])
-
-        keys = pygame.key.get_pressed()
-        if self.interval > 10:
-            self.interval = 0
-            if keys[K_RCTRL] or keys[K_LCTRL]:
-                self.jogador.atira(self.elementos["tiros"])
+            if key == K_UP or key == K_DOWN or key == K_RIGHT or key == K_LEFT:
+                self.jogador.stop()
 
     def loop(self):
         clock = pygame.time.Clock()
         dt = 16
         self.elementos['virii'] = pygame.sprite.RenderPlain(Virus([120, 50]))
-        self.jogador = Jogador([200, 400], 5)
+        self.jogador = Jogador ([self.screen_size[0]/2, 400], 5)
         self.elementos['jogador'] = pygame.sprite.RenderPlain(self.jogador)
         self.elementos['tiros'] = pygame.sprite.RenderPlain()
         self.elementos['tiros_inimigo'] = pygame.sprite.RenderPlain()
-        self.musica()
+        #self.musica()
         while self.run:
             clock.tick(1000 / dt)
 
             self.trata_eventos()
             self.ação_elemento()
             self.manutenção()
+            self.interval += 1
             
             # Atualiza Elementos
             self.atualiza_elementos(dt)
+            self.muda_nivel()
 
             # Desenhe no back buffer
             self.desenha_elementos()
@@ -217,28 +219,28 @@ class Jogo:
       fonte = pygame.font.SysFont ("arialblack",24)
       texto = fonte.render(f"Vidas: {self.jogador.lives}", True, (255,0,0))
       screen = pygame.display.get_surface()
-      screen.blit(texto,(0,0))
+      screen.blit(texto,(30, int(self.screen_size[1] * 0.02)))
 
     def desenha_pontos(self):
       fonte = pygame.font.SysFont ("arialblack",24)
       texto = fonte.render(f"Pontos: {self.jogador.pontos}", True, (255,0,0))
       screen = pygame.display.get_surface()
-      screen.blit(texto,(0,25))
+      screen.blit(texto,(30, int(self.screen_size[1] * 0.07)))
 
     def desenha_nivel(self):
       fonte = pygame.font.SysFont ("arialblack",24)
       texto = fonte.render(f"Nível: {self.nivel}", True, (255,0,0))
       screen = pygame.display.get_surface()
-      screen.blit(texto,(0,50))
+      screen.blit(texto,(30,(30, int(self.screen_size[1] * 0.12)))
 
-    def musica(self):
-      pygame.mixer.music.load("imagens/shark_song.mp3")
+#    def musica(self):
+#      pygame.mixer.music.load("imagens/shark_song.mp3")
 #      pygame.mixer.music.load("imagens/shark_song2.mp3")
-      pygame.mixer.music.play(-1)
+#      pygame.mixer.music.play(-1)
 
 class Nave(ElementoSprite):
-    def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[83, 248]):
-        self.acceleration = [3, 3]
+    def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[40, 100]):
+        self.acceleration = [5, 5]
         if not image:
             image = "barco.png"
         super().__init__(image, position, speed, new_size)
@@ -262,7 +264,7 @@ class Nave(ElementoSprite):
         Tiro(self.get_pos(), s, image, lista_de_tiros)
 
     def alvejado(self):
-        if self.get_lives() <= 0:
+        if self.get_lives() < 1:
             self.kill()
         else:
             self.set_lives(self.get_lives() - 1)
