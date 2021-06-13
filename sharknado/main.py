@@ -239,11 +239,11 @@ class Jogo:
 #      pygame.mixer.music.play(-1)
 
 class Nave(ElementoSprite):
-    def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[40, 100]):
+    def __init__(self, position, lives=0, speed=[0, 0], image=None, new_size=[40, 100],new_angle=None):
         self.acceleration = [5, 5]
         if not image:
             image = "barco.png"
-        super().__init__(image, position, speed, new_size)
+        super().__init__(image, position, speed, new_size,new_angle)
         self.set_lives(lives)
 
     def get_lives(self):
@@ -275,23 +275,38 @@ class Nave(ElementoSprite):
 
     def accel_top(self):
         speed = self.get_speed()
-        self.set_speed((speed[0], speed[1] - self.acceleration[1]))
+        self.set_speed((speed[0], - self.acceleration[1]))
+        old_angle = self.get_angle()
+        if old_angle != 360:    
+            self.rotate(old_angle, 360)
 
     def accel_bottom(self):
         speed = self.get_speed()
-        self.set_speed((speed[0], speed[1] + self.acceleration[1]))
-
+        self.set_speed((speed[0], self.acceleration[1]))
+        old_angle = self.get_angle()
+        if old_angle != 180:    
+            self.rotate(old_angle, 180)
+    
     def accel_left(self):
         speed = self.get_speed()
-        self.set_speed((speed[0] - self.acceleration[0], speed[1]))
+        self.set_speed((-self.acceleration[0], speed[1]))
+        old_angle = self.get_angle()
+        if old_angle != 90:    
+            self.rotate(old_angle, 90)
 
     def accel_right(self):
         speed = self.get_speed()
-        self.set_speed((speed[0] + self.acceleration[0], speed[1]))
+        self.set_speed((self.acceleration[0], speed[1]))
+        old_angle = self.get_angle()
+        if old_angle != -90:    
+            self.rotate(old_angle, -90)
+    
+    def stop(self):
+        self.set_speed((0, 0))
 
 
 class Virus(Nave):
-    def __init__(self, position, lives=1, speed=None, image=None, size=(100, 100)):
+    def __init__(self, position, lives=1, speed=None, image=None, size=(100, 100),new_angle=None):
         if not image:
             image = "tubarao.png"
         super().__init__(position, lives, speed, image, size)
@@ -308,10 +323,10 @@ class Jogador(Nave):
     das outras.
     """
 
-    def __init__(self, position, lives=10, image=None, new_size=[83, 248]):
+    def __init__(self, position, lives=10, image=None, new_size=[65, 150], new_angle=None):
         if not image:
             image = "barco.png"
-        super().__init__(position, lives, [0, 0], image, new_size)
+        super().__init__(position, lives, [0, 0], image, new_size,new_angle)
         self.pontos = 0
 
     def update(self, dt):
@@ -346,9 +361,10 @@ class Jogador(Nave):
         if self.pontos > 50: l = 5
 
         p = self.get_pos()
-        speeds = self.get_fire_speed(l)
+        angle = self.get_angle()
+        speeds = self.get_fire_speed(l, angle)
         for s in speeds:
-            Tiro(p, s, image, lista_de_tiros)
+            Tiro(p, s, image, lista_de_tiros,[15,100],angle)
 
     def get_fire_speed(self, shots):
         speeds = []
@@ -357,28 +373,28 @@ class Jogador(Nave):
             return speeds
 
         if shots == 1:
-            speeds += [(0, -5)]
+            speeds += [(- 0 * math.cos(math.radians(direction)) + (-7) * math.sin(math.radians(direction)), 0 * math.sin(math.radians(direction)) + (-7) * math.cos(math.radians(direction)))]
 
         if shots > 1 and shots <= 3:
-            speeds += [(0, -5)]
-            speeds += [(-2, -3)]
-            speeds += [(2, -3)]
+            speeds += [(- 0 * math.cos(math.radians(direction)) + (-7) * math.sin(math.radians(direction)), 0 * math.sin(math.radians(direction)) + (-7) * math.cos(math.radians(direction)))]
+            speeds += [(- 0 * math.cos(math.radians(direction - 30)) + (-7) * math.sin(math.radians(direction - 30)), 0 * math.sin(math.radians(direction - 30)) + (-7) * math.cos(math.radians(direction - 30)))]
+            speeds += [(- 0 * math.cos(math.radians(direction + 30)) + (-7) * math.sin(math.radians(direction + 30)), 0 * math.sin(math.radians(direction + 30)) + (-7) * math.cos(math.radians(direction + 30)))]
 
         if shots > 3 and shots <= 5:
-            speeds += [(0, -5)]
-            speeds += [(-2, -3)]
-            speeds += [(2, -3)]
-            speeds += [(-4, -2)]
-            speeds += [(4, -2)]
+            speeds += [(- 0 * math.cos(math.radians(direction)) + (-7) * math.sin(math.radians(direction)), 0 * math.sin(math.radians(direction)) + (-7) * math.cos(math.radians(direction)))]
+            speeds += [(- 0 * math.cos(math.radians(direction - 30)) + (-7) * math.sin(math.radians(direction - 30)), 0 * math.sin(math.radians(direction - 30)) + (-7) * math.cos(math.radians(direction - 30)))]
+            speeds += [(- 0 * math.cos(math.radians(direction + 30)) + (-7) * math.sin(math.radians(direction + 30)), 0 * math.sin(math.radians(direction + 30)) + (-7) * math.cos(math.radians(direction + 30)))]
+            speeds += [(- 0 * math.cos(math.radians(direction - 60)) + (-7) * math.sin(math.radians(direction - 60)), 0 * math.sin(math.radians(direction - 60)) + (-7) * math.cos(math.radians(direction - 60)))]
+            speeds += [(- 0 * math.cos(math.radians(direction + 60)) + (-7) * math.sin(math.radians(direction + 60)), 0 * math.sin(math.radians(direction + 60)) + (-7) * math.cos(math.radians(direction + 60)))]
 
         return speeds
 
 
 class Tiro(ElementoSprite):
-    def __init__(self, position, speed=None, image=None, list=None):
+    def __init__(self, position, speed=None, image=None, list=None, new_size=[15,100], new_angle=None):
         if not image:
             image = "arpao.png"
-        super().__init__(image, position, speed)
+        super().__init__(image, position, speed, new_size, new_angle)
         if list is not None:
             self.add(list)
 
