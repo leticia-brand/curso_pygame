@@ -20,7 +20,7 @@ class Inicio: # menu
         self.elementos = {}
         pygame.init()
         self.tela = pygame.display.set_mode(size, flags=False, depth=16)
-        self.fundo = Fundo(image="mar_menu.png")
+        self.fundo = Fundo(image="fundo_menu.png")
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -109,7 +109,7 @@ class Jogo:
             self.nivel = 2
             self.jogador.set_lives(self.jogador.get_lives() + 3)
         elif xp > 50 and self.nivel == 2:
-            self.fundo = Fundo("mar.png")
+            self.fundo = Fundo("mar3.png")
             self.nivel = 3
             self.jogador.set_lives(self.jogador.get_lives() + 6)
 
