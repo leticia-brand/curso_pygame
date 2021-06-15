@@ -190,7 +190,6 @@ class Jogo:
                     self.interval = 0
                     pygame.mixer.music.load("imagens/shark_song2.mp3")
                     pygame.mixer.music.stop()
-                    self.run = False
                     
 
         if event.type == pygame.KEYUP:
