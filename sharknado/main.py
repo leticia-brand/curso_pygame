@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import (DOUBLEBUF, FULLSCREEN, KEYDOWN, KEYUP, K_LEFT,
                            K_RIGHT, QUIT, K_ESCAPE, K_UP, K_DOWN, K_RCTRL,
-                           K_LCTRL, K_KP_ENTER, K_RETURN, K_p)
+                           K_LCTRL, K_KP_ENTER, K_RETURN, K_p, K_c)
 from fundo import Fundo
 from elementos import ElementoSprite
 import math
@@ -187,9 +187,22 @@ class Jogo:
                     arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
                     arpao_som.play()
                 if key == (K_p):
-                    self.interval = 0
+                    dp=0
+                    pause = "pausado"
                     pygame.mixer.music.load("imagens/shark_song2.mp3")
                     pygame.mixer.music.stop()
+                    
+                    while pause == "pausado":
+                        
+                        self.atualiza_elementos(dp)
+                        
+                        event = pygame.event.poll()
+                        if event.type == pygame.KEYDOWN:
+                            key = event.key
+                            if key == (K_c):
+                                pygame.mixer.music.load("imagens/shark_song2.mp3")
+                                pygame.mixer.music.play(-1)
+                                pause = "play"
                     
 
         if event.type == pygame.KEYUP:
@@ -223,6 +236,8 @@ class Jogo:
             self.desenha_vidas()
             self.desenha_pontos()
             self.desenha_nivel()
+            
+            
             pygame.display.flip()
 
     def desenha_vidas(self):
