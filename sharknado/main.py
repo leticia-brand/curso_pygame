@@ -446,7 +446,7 @@ class Arraia(Nave):
         
         
 class Espada(Nave):
-    def __init__(self, position, lives=0, speed=None, image=None, size=(50, 150), new_angle=None, tempo_inicial=None):
+    def __init__(self, position, lives=9, speed=None, image=None, size=(50, 150), new_angle=None, tempo_inicial=None):
         
         self.tempo_inicial = tempo_inicial
         self.sentido = speed[0]/abs(speed[0])
@@ -465,7 +465,7 @@ class Espada(Nave):
             
             
 class Polvo(Nave):
-    def __init__(self, position, lives=2, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
+    def __init__(self, position, lives=4, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
         
         self.tempo_inicial = tempo_inicial
         self.sentido = speed[0]/abs(speed[0])
