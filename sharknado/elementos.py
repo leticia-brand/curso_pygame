@@ -69,7 +69,12 @@ class ElementoSprite(pygame.sprite.Sprite):
         angle = new_angle - old_angle
         self.image = pygame.transform.rotate(self.image, angle)
         self.angle = new_angle
+        """
         if abs(angle) != 180:
             aux = self.rect.w
             self.rect.w = self.rect.h
             self.rect.h = aux
+        """
+        x, y = self.rect.center
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
