@@ -77,8 +77,6 @@ class Pause:
         screen = pygame.display.get_surface()
         screen.blit(texto_pause, (385, 150))
         
-        retangulo = pygame.draw.rect(screen, (255,255,255), (220, 300, 765, 80))
-        
         fonte2 = pygame.font.SysFont("arialblack", 50)
         texto2 = fonte2.render("Pressione C para continuar", True, (0, 0, 0))
         screen.blit(texto2, (230, 300))
@@ -95,6 +93,8 @@ class Pause:
                 self.desenha_pause()
                 
                 event = pygame.event.poll()
+                if event.type == pygame.QUIT:
+                    self.run = False 
                 if event.type == pygame.KEYDOWN:
                     key = event.key
                     if key == (K_c):
@@ -219,15 +219,70 @@ class Jogo:
         self.verifica_impactos(self.jogador, self.elementos["tiros_inimigo"],
                                self.jogador.alvejado)
         if self.jogador.morto:
-            self.run = False
+            self.jogador.set_lives = 0
+            self.desenha_vidas()
+            morto = "status"
+            while morto =="status":
+                
+                fonte1 = pygame.font.SysFont("arialblack", 80)
+                texto_pause = fonte1.render("GAME OVER", True, (200, 0, 0))
+                screen = pygame.display.get_surface()
+                screen.blit(texto_pause, (335.5, 50))
+        
+        
+                fonte2 = pygame.font.SysFont("arialblack", 50)
+                texto2 = fonte2.render("Pressione Enter para retornar ao menu", True, (0, 0, 0))
+                screen.blit(texto2, (74, 500))
+                imagem = pygame.image.load("imagens/game_over.png")
+                screen.blit(imagem, (289, 230))
+                
+                pygame.display.flip()
+            
+                event = pygame.event.poll()
+                if event.type == pygame.QUIT:
+                    self.run = False 
+                if event.type == pygame.KEYDOWN:
+                    key = event.key
+                    if key == K_KP_ENTER or key == K_RETURN:
+                            self.run = False
+                            morto = "menu"
+                            
+
             return
 
         # Verifica se o personagem trombou em algum inimigo
         self.verifica_impactos(self.jogador, self.elementos["fish"],
                                self.jogador.colisão)
         if self.jogador.morto:
-            self.run = False
+            morto = "status"
+            self.jogador.set_lives = 0
+            self.desenha_vidas()
+            while morto =="status":
+                
+                fonte1 = pygame.font.SysFont("arialblack", 80)
+                texto_over = fonte1.render("GAME OVER", True, (200, 0, 0))
+                screen = pygame.display.get_surface()
+                screen.blit(texto_over, (335.5, 50))
+        
+        
+                fonte2 = pygame.font.SysFont("arialblack", 50)
+                texto2 = fonte2.render("Pressione Enter para retornar ao menu", True, (0, 0, 0))
+                screen.blit(texto2, (74, 500))
+                imagem = pygame.image.load("imagens/game_over.png")
+                screen.blit(imagem, (289, 230))
+                
+                pygame.display.flip()
+            
+                event = pygame.event.poll()
+                if event.type == pygame.QUIT:
+                    self.run = False 
+                if event.type == pygame.KEYDOWN:
+                    key = event.key
+                    if key == K_KP_ENTER or key == K_RETURN:
+                            self.run = False
+                            morto = "menu"
             return
+        
         # Verifica se o personagem atingiu algum alvo.
         hitted = self.verifica_impactos(self.elementos["tiros"],
                                         self.elementos["fish"],
