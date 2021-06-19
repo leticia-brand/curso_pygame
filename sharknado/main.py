@@ -7,7 +7,6 @@ from elementos import ElementoSprite
 import math
 import random
 
-
 class Inicio:  # menu
     def __init__(self, size=(1200, 650), fullscreen=False):
         self.elementos = {}
@@ -77,6 +76,8 @@ class Pause:
         screen = pygame.display.get_surface()
         screen.blit(texto_pause, (385, 150))
         
+        retangulo = pygame.draw.rect(screen, (255,255,255), (220, 300, 765, 80))
+        
         fonte2 = pygame.font.SysFont("arialblack", 50)
         texto2 = fonte2.render("Pressione C para continuar", True, (0, 0, 0))
         screen.blit(texto2, (230, 300))
@@ -93,8 +94,6 @@ class Pause:
                 self.desenha_pause()
                 
                 event = pygame.event.poll()
-                if event.type == pygame.QUIT:
-                    self.run = False 
                 if event.type == pygame.KEYDOWN:
                     key = event.key
                     if key == (K_c):
@@ -134,6 +133,7 @@ class Jogo:
         
         #Arraia
         
+        xp = self.jogador.get_pontos()
         r = random.randint(0, 100)
         x = random.randint(1, self.screen_size[0])
         if r > (40 * len(self.elementos["fish"])):
@@ -143,9 +143,11 @@ class Jogo:
             self.elementos["fish"].add(enemy)
             self.arraias.append(enemy)
             
-        #Espada
-              
-        if self.contador == self.spaw_espada:
+        # if (xp > 10):
+            
+            #Espada
+                  
+        if (self.contador == self.spaw_espada):
             self.spaw_espada = self.contador + 200 * (random.randint(1, 5) + 5)
             if random.randint(1, 2) == 1:
                 enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
@@ -157,21 +159,23 @@ class Jogo:
             self.elementos["fish"].add(enemy)
             self.espadas.append(enemy)
             
-        #Polvo
-        
-        if self.contador == self.spaw_polvo:
-            self.spaw_polvo = self.contador + 100 * (random.randint(5, 10) + 5)
-            if len(self.polvos) < 1:
-                r = random.randint(1, 2)
-                if r == 1:
-                    enemy = Polvo([-50, -50], lives=2, speed = (2, 2), tempo_inicial = self.contador)
-                    enemy.set_pos([-50, -50])
-                elif r == 2:
-                    enemy = Polvo([self.screen_size[0] + 50, -50], lives=2, speed = (-2, 2), tempo_inicial = self.contador)
-                    enemy.set_pos([self.screen_size[0] + 50, -50])
-                    
-                self.elementos["fish"].add(enemy)
-                self.polvos.append(enemy)
+        if (xp > 20):
+            
+            #Polvo
+            
+            if self.contador == self.spaw_polvo:
+                self.spaw_polvo = self.contador + 100 * (random.randint(5, 10) + 5)
+                if len(self.polvos) < 1:
+                    r = random.randint(1, 2)
+                    if r == 1:
+                        enemy = Polvo([-50, -50], lives=4, speed = (2, 2), tempo_inicial = self.contador)
+                        enemy.set_pos([-50, -50])
+                    elif r == 2:
+                        enemy = Polvo([self.screen_size[0] + 50, -50], lives=4, speed = (-2, 2), tempo_inicial = self.contador)
+                        enemy.set_pos([self.screen_size[0] + 50, -50])
+                        
+                    self.elementos["fish"].add(enemy)
+                    self.polvos.append(enemy)
 
     def muda_nivel(self):
         xp = self.jogador.get_pontos()
@@ -190,7 +194,7 @@ class Jogo:
         elif xp > 40 and self.nivel == 4:
             self.fundo = Fundo("mar5.png")
             self.nivel = 5
-            self.jogador.set_lives(self.jogador.get_lives() + 6)
+            self.jogador.set_lives(self.jogador.get_lives() + 3)
 
     def atualiza_elementos(self, dt):
         self.fundo.update(dt)
@@ -318,8 +322,14 @@ class Jogo:
                 if key in (K_LCTRL, K_RCTRL):
                     self.interval = 0
                     self.jogador.atira(self.elementos["tiros"])
-                    arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
-                    arpao_som.play()
+                    # arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
+                    
+                    xp = self.jogador.get_pontos()
+                    if xp > 30 and xp <= 60:
+                        arpao_som = pygame.mixer.Sound("imagens/som_canhao.wav")
+                    else:
+                        arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
+                    arpao_som.play()                    
                     
                 if key == (K_p):
                     if __name__ == '__main__':
@@ -520,7 +530,7 @@ class Espada(Nave):
             
             
 class Polvo(Nave):
-    def __init__(self, position, lives=4, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
+    def __init__(self, position, lives=2, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
         
         self.tempo_inicial = tempo_inicial
         self.sentido = speed[0]/abs(speed[0])
@@ -622,7 +632,12 @@ class Jogador(Nave):
             else:
                 a = math.ceil(math.atan(s[0]/abs(s[1]))*180/math.pi) + 180
             
-            Tiro(p, s, image, lista_de_tiros, [15, 100], a)
+            if self.pontos <=30:
+                Tiro(p, s, image, lista_de_tiros, [15, 100], a)
+            elif self.pontos <=60:
+                Canhao(p, s, image, lista_de_tiros, [30, 30], a)
+            else:
+                Rede(p, s, image, lista_de_tiros, [120, 120], a)
 
     # def atira(self, lista_de_tiros, image=None):
     #     l = 1
