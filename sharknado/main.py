@@ -9,7 +9,7 @@ import random
 
 
 class Inicio:  # menu
-    def __init__(self, size=(1000, 600), fullscreen=False):
+    def __init__(self, size=(1200, 650), fullscreen=False):
         self.elementos = {}
         pygame.init()
         self.tela = pygame.display.set_mode(size, flags=False, depth=16)
@@ -27,10 +27,10 @@ class Inicio:  # menu
         fonte_titulo = pygame.font.SysFont("arialblack", 75)
         texto_titulo = fonte_titulo.render("MENU", True, (0, 0, 0))
         screen = pygame.display.get_surface()
-        screen.blit(texto_titulo, (380, 50))
+        screen.blit(texto_titulo, (470, 50))
 
         imagem = pygame.image.load("imagens/instrucoes4.png")
-        screen.blit(imagem, (100, 200))
+        screen.blit(imagem, (50, 240))
 
     def atualiza_menu(self, dt):
         self.fundo.update(dt)
@@ -67,16 +67,57 @@ class Inicio:  # menu
 
             pygame.display.flip()
 
+class Pause:
+    def __init__(self, size=(1200, 650), fullscreen=False):
+        self.run = True
+            
+    def desenha_pause(self):
+        fonte1 = pygame.font.SysFont("arialblack", 80)
+        texto_pause = fonte1.render("PAUSADO", True, (200, 0, 0))
+        screen = pygame.display.get_surface()
+        screen.blit(texto_pause, (385, 150))
+        
+        retangulo = pygame.draw.rect(screen, (255,255,255), (220, 300, 765, 80))
+        
+        fonte2 = pygame.font.SysFont("arialblack", 50)
+        texto2 = fonte2.render("Pressione C para continuar", True, (0, 0, 0))
+        screen.blit(texto2, (230, 300))
+
+    def pause_loop(self):		
+            pause = "pausado"
+            clock = pygame.time.Clock()
+            
+            pygame.mixer.music.load("imagens/shark_song2.mp3")
+            pygame.mixer.music.pause()
+            
+            while pause == "pausado":
+                clock.tick(1000 / 16)
+                self.desenha_pause()
+                
+                event = pygame.event.poll()
+                if event.type == pygame.KEYDOWN:
+                    key = event.key
+                    if key == (K_c):
+                        pygame.mixer.music.load("imagens/shark_song2.mp3")
+                        pygame.mixer.music.play(-1)
+                        pause = "play"   
+                pygame.display.flip()
 
 class Jogo:
-    def __init__(self, size=(1000, 600), fullscreen=False):
+    def __init__(self, size=(1200, 650), fullscreen=False):
         self.elementos = {}
+        self.arraias = []
+        self.espadas = []
+        self.polvos = []
         pygame.init()
         self.tela = pygame.display.set_mode(size)
         self.fundo = Fundo("mar.png")
         self.jogador = None
         self.interval = 0
         self.nivel = 1
+        self.contador = 0
+        self.spaw_espada = 1
+        self.spaw_polvo = 1
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -86,14 +127,51 @@ class Jogo:
         pygame.display.set_caption('Corona Shooter')
         self.run = True
 
-    def manutenção(self):
+    def set_pos(self, tiro):
+        self.elementos["tiros_inimigo"].add(tiro)
+
+    def manutenção(self, pos):
+        
+        #Arraia
+        
         r = random.randint(0, 100)
         x = random.randint(1, self.screen_size[0])
-        if r > (40 * len(self.elementos["virii"])):
-            enemy = Virus([0, 0])
+        if r > (40 * len(self.elementos["fish"])):
+            enemy = Arraia([0, 0])
             size = enemy.get_size()
             enemy.set_pos([x, 0])
-            self.elementos["virii"].add(enemy)
+            self.elementos["fish"].add(enemy)
+            self.arraias.append(enemy)
+            
+        #Espada
+              
+        if self.contador == self.spaw_espada:
+            self.spaw_espada = self.contador + 200 * (random.randint(1, 5) + 5)
+            if random.randint(1, 2) == 1:
+                enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
+                enemy.set_pos([-50, pos[1]])
+            else:
+                enemy = Espada([self.screen_size[0] + 50, pos[1]], speed = (-2, 0), new_angle = -90, tempo_inicial = self.contador)
+                enemy.set_pos([self.screen_size[0] + 50, pos[1]])
+            size = enemy.get_size()
+            self.elementos["fish"].add(enemy)
+            self.espadas.append(enemy)
+            
+        #Polvo
+        
+        if self.contador == self.spaw_polvo:
+            self.spaw_polvo = self.contador + 100 * (random.randint(5, 10) + 5)
+            if len(self.polvos) < 1:
+                r = random.randint(1, 2)
+                if r == 1:
+                    enemy = Polvo([-50, -50], lives=2, speed = (2, 2), tempo_inicial = self.contador)
+                    enemy.set_pos([-50, -50])
+                elif r == 2:
+                    enemy = Polvo([self.screen_size[0] + 50, -50], lives=2, speed = (-2, 2), tempo_inicial = self.contador)
+                    enemy.set_pos([self.screen_size[0] + 50, -50])
+                    
+                self.elementos["fish"].add(enemy)
+                self.polvos.append(enemy)
 
     def muda_nivel(self):
         xp = self.jogador.get_pontos()
@@ -145,15 +223,16 @@ class Jogo:
             return
 
         # Verifica se o personagem trombou em algum inimigo
-        self.verifica_impactos(self.jogador, self.elementos["virii"],
+        self.verifica_impactos(self.jogador, self.elementos["fish"],
                                self.jogador.colisão)
         if self.jogador.morto:
             self.run = False
             return
         # Verifica se o personagem atingiu algum alvo.
         hitted = self.verifica_impactos(self.elementos["tiros"],
-                                        self.elementos["virii"],
-                                        Virus.alvejado)
+                                        self.elementos["fish"],
+                                        Arraia.alvejado)
+        
 
         # Aumenta a pontos baseado no número de acertos:
         self.jogador.set_pontos(self.jogador.get_pontos() + len(hitted))
@@ -186,58 +265,77 @@ class Jogo:
                     self.jogador.atira(self.elementos["tiros"])
                     arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
                     arpao_som.play()
+                    
                 if key == (K_p):
-                    dp=0
-                    pause = "pausado"
-                    pygame.mixer.music.load("imagens/shark_song2.mp3")
-                    pygame.mixer.music.stop()
-                    
-                    while pause == "pausado":
-                        
-                        self.atualiza_elementos(dp)
-                        
-                        event = pygame.event.poll()
-                        if event.type == pygame.KEYDOWN:
-                            key = event.key
-                            if key == (K_c):
-                                pygame.mixer.music.load("imagens/shark_song2.mp3")
-                                pygame.mixer.music.play(-1)
-                                pause = "play"
-                    
+                    if __name__ == '__main__':
+                        P = Pause()
+                        dp = 0
+                        while True:
+                            self.atualiza_elementos(dp)
+                            P.pause_loop()
+                            break              
 
         if event.type == pygame.KEYUP:
             key = event.key
             if key == K_UP or key == K_DOWN or key == K_RIGHT or key == K_LEFT:
                 self.jogador.stop()
 
+    def remover_elementos(self):
+        for n in self.arraias:
+            if str(n) == "<Arraia Sprite(in 0 groups)>":
+                self.arraias.remove(n)
+                
+        for n in self.espadas:
+            if str(n) == "<Espada Sprite(in 0 groups)>":
+                self.espadas.remove(n)
+                
+        for n in self.polvos:
+            if str(n) == "<Polvo Sprite(in 0 groups)>":
+                self.polvos.remove(n)
+                
     def loop(self):
         clock = pygame.time.Clock()
         dt = 16
-        self.elementos['virii'] = pygame.sprite.RenderPlain(Virus([120, 50]))
-        self.jogador = Jogador([self.screen_size[0] / 2, 400], 5)
+        self.elementos['fish'] = pygame.sprite.RenderPlain()
+        self.jogador = Jogador([self.screen_size[0]/2, 400], 5)
         self.elementos['jogador'] = pygame.sprite.RenderPlain(self.jogador)
         self.elementos['tiros'] = pygame.sprite.RenderPlain()
-        self.elementos['tiros_inimigo'] = pygame.sprite.RenderPlain()
+        self.elementos['tiros_inimigo'] = pygame.sprite.RenderPlain(())
         self.musica()
+        
         while self.run:
             clock.tick(1000 / dt)
-
+            
+            self.remover_elementos()
+            self.muda_nivel()
             self.trata_eventos()
             self.ação_elemento()
-            self.manutenção()
+            
+            pos = self.jogador.get_pos()
+            
             self.interval += 1
-
+            self.contador += 1            
+            
+            self.manutenção(pos)
+            
+            for n in self.espadas:
+                n.parar(self.contador)
+                n.correr(self.contador)
+                
+            for m in self.polvos:
+                m.parar(self.contador)
+                tiro = m.tinta(self.contador, pos)
+                if tiro:
+                    self.elementos["tiros_inimigo"].add(tiro)
+                                
             # Atualiza Elementos
             self.atualiza_elementos(dt)
-            self.muda_nivel()
-
+            
             # Desenhe no back buffer
             self.desenha_elementos()
             self.desenha_vidas()
             self.desenha_pontos()
             self.desenha_nivel()
-            
-            
             pygame.display.flip()
 
     def desenha_vidas(self):
@@ -248,8 +346,7 @@ class Jogo:
 
     def desenha_pontos(self):
         fonte = pygame.font.SysFont("arialblack", 24)
-        texto = fonte.render(f"Pontos: {self.jogador.pontos}", True,
-                             (255, 0, 0))
+        texto = fonte.render(f"Pontos: {self.jogador.pontos}", True, (255, 0, 0))
         screen = pygame.display.get_surface()
         screen.blit(texto, (30, int(self.screen_size[1] * 0.07)))
 
@@ -285,8 +382,9 @@ class Nave(ElementoSprite):
         self.lives = lives
 
     def colisão(self):
-        if self.get_lives() <= 0:
+        if self.get_lives() < 1:
             self.kill()
+            del self
         else:
             self.set_lives(self.get_lives() - 1)
 
@@ -307,63 +405,99 @@ class Nave(ElementoSprite):
     @property
     def morto(self):
         return self.get_lives() == 0
-
+    
     def accel_top(self):
         speed = self.get_speed()
         self.set_speed((speed[0], -self.acceleration[1]))
         old_angle = self.get_angle()
-        if old_angle != 360:
-            self.rotate(old_angle, 360)
+        if old_angle != 0:    
+            self.rotate(old_angle, 0)
 
     def accel_bottom(self):
         speed = self.get_speed()
         self.set_speed((speed[0], self.acceleration[1]))
         old_angle = self.get_angle()
-        if old_angle != 180:
+        if old_angle != 180:    
             self.rotate(old_angle, 180)
 
     def accel_left(self):
         speed = self.get_speed()
         self.set_speed((-self.acceleration[0], speed[1]))
         old_angle = self.get_angle()
-        if old_angle != 90:
+        if old_angle != 90:    
             self.rotate(old_angle, 90)
 
     def accel_right(self):
         speed = self.get_speed()
         self.set_speed((self.acceleration[0], speed[1]))
         old_angle = self.get_angle()
-        if old_angle != -90:
-            self.rotate(old_angle, -90)
-
+        if old_angle != 270:    
+            self.rotate(old_angle, 270)
+    
     def stop(self):
         self.set_speed((0, 0))
 
 
-class Virus(Nave):
-    def __init__(self,
-                 position,
-                 lives=0,
-                 speed=None,
-                 image=None,
-                 size=(50, 50),
-                 new_angle=None):
+class Arraia(Nave):
+    def __init__(self, position, lives=0, speed=None, image=None, size=(60, 60), new_angle=None):
         if not image:
             image = "arraia.png"
-        super().__init__(position, lives, speed, image, size)
-
-
+        super().__init__(position, lives, speed, image, size, new_angle)
+        
+        
 class Espada(Nave):
-    def __init__(self,
-                 position,
-                 lives=1,
-                 speed=None,
-                 image=None,
-                 size=(100, 100),
-                 new_angle=None):
+    def __init__(self, position, lives=0, speed=None, image=None, size=(50, 150), new_angle=None, tempo_inicial=None):
+        
+        self.tempo_inicial = tempo_inicial
+        self.sentido = speed[0]/abs(speed[0])
+        
         if not image:
-            image = "tubarao2.png"
-        super().__init__(position, lives, speed, image, size)
+            image = "espada.png"
+        super().__init__(position, lives, speed, image, size, new_angle)
+                
+    def parar(self, tempo):
+        if tempo == self.tempo_inicial + 40:
+            self.set_speed((0, 0))
+            
+    def correr(self, tempo):
+        if tempo == self.tempo_inicial + 80:
+            self.set_speed((15 * (self.sentido), 0))
+            
+            
+class Polvo(Nave):
+    def __init__(self, position, lives=2, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
+        
+        self.tempo_inicial = tempo_inicial
+        self.sentido = speed[0]/abs(speed[0])
+        
+        if not image:
+            image = "polvo.png"
+        super().__init__(position, lives, speed, image, size, new_angle)
+
+        
+    def parar(self, tempo):
+        if tempo == self.tempo_inicial + 40:
+            self.set_speed((0, 0))   
+            
+    def tinta(self, tempo, pos):
+        if (tempo - self.tempo_inicial) % 200 == 0:
+            minha_pos = self.get_pos()
+            s = [(pos[0] - minha_pos[0]), (pos[1] - minha_pos[1])]
+                        
+            if s[1]==0:
+                if s[0]==0:
+                    a = random.randint(0, 180)
+                else:
+                    a = 90*s[0]/abs(s[0]) + 180
+            elif s[1]<0:
+                a = math.ceil(math.atan((-1)*s[0]/abs(s[1]))*180/math.pi)
+            else:
+                a = math.ceil(math.atan(s[0]/abs(s[1]))*180/math.pi) + 180                    
+                
+            s = [-10 * math.sin(math.radians(a)), -10 * math.cos(math.radians(a))]
+            
+            shot = Tiro_Inimigo(position=minha_pos, speed=s, new_angle=a)
+            return shot
 
 
 class Jogador(Nave):
@@ -416,16 +550,40 @@ class Jogador(Nave):
     def atira(self, lista_de_tiros, image=None):
         l = 1
         if self.pontos > 10: l = 3
-        if self.pontos > 30: l = 5
+        if self.pontos > 50: l = 5
 
         p = self.get_pos()
         angle = self.get_angle()
         speeds = self.get_fire_speed(l, angle)
         for s in speeds:
-            if self.pontos <=30:
-                Tiro(p, s, image, lista_de_tiros, [15, 100], angle)
+            
+            if s[1]==0:
+                if s[0]==0:
+                    a = random.randint(0, 180)
+                else:
+                    a = 90*s[0]/abs(s[0]) + 180
+            elif s[1]<0:
+                a = math.ceil(math.atan((-1)*s[0]/abs(s[1]))*180/math.pi)
             else:
-                Canhao(p, s, image, lista_de_tiros, [30, 30], angle)
+                a = math.ceil(math.atan(s[0]/abs(s[1]))*180/math.pi) + 180
+            
+            Tiro(p, s, image, lista_de_tiros, [15, 100], a)
+
+    # def atira(self, lista_de_tiros, image=None):
+    #     l = 1
+    #     if self.pontos > 10: l = 3
+    #     if self.pontos > 30: l = 5
+
+    #     p = self.get_pos()
+    #     angle = self.get_angle()
+    #     speeds = self.get_fire_speed(l, angle)
+    #     for s in speeds:
+    #         if self.pontos <=30:
+    #             Tiro(p, s, image, lista_de_tiros, [15, 100], angle)
+    #         elif self.pontos >30 and self.pontos <=60:
+    #             Canhao(p, s, image, lista_de_tiros, [30, 30], angle)
+    #         else:
+    #             Rede(p, s, image, lista_de_tiros, [120, 120], angle)
 
     def get_fire_speed(self, shots, direction):
         speeds = []
@@ -506,6 +664,26 @@ class Canhao (ElementoSprite):
         super().__init__(image, position, speed, new_size, new_angle)
         if list is not None:
             self.add(list)
+            
+class Rede (ElementoSprite):
+    def __init__(self,
+                 position,
+                 speed=None,
+                 image=None,
+                 list=None,
+                 new_size=[60, 60],
+                 new_angle=None):
+        if not image:
+            image = "rede.png"
+        super().__init__(image, position, speed, new_size, new_angle)
+        if list is not None:
+            self.add(list)
+
+class Tiro_Inimigo(ElementoSprite):
+    def __init__(self, position, speed=None, image=None,  new_size=[50, 50], new_angle=None):
+        if not image:
+            image = "tiro.png"
+        super().__init__(image, position, speed, new_size, new_angle)
 
 if __name__ == '__main__':
     I = Inicio()
