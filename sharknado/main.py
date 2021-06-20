@@ -346,29 +346,31 @@ class Jogo:
                 pygame.mixer.music.load("imagens/shark_song2.mp3")
                 pygame.mixer.music.play(0)
                 self.run = False
-            elif key == K_UP:
-                self.jogador.accel_top()
-            elif key == K_DOWN:
-                self.jogador.accel_bottom()
-            elif key == K_RIGHT:
-                self.jogador.accel_right()
-            elif key == K_LEFT:
-                self.jogador.accel_left()
+            elif move:
+                if key == K_UP:
+                    self.jogador.accel_top()
+                elif key == K_DOWN:
+                    self.jogador.accel_bottom()
+                elif key == K_RIGHT:
+                    self.jogador.accel_right()
+                elif key == K_LEFT:
+                    self.jogador.accel_left()
 
         if self.interval > 30:
             if event.type == pygame.KEYUP:
                 key = event.key
-                if key in (K_LCTRL, K_RCTRL):
-                    self.interval = 0
-                    self.jogador.atira(self.elementos["tiros"])
-                    # arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
-                    
-                    xp = self.jogador.get_pontos()
-                    if xp > 30 and xp <= 60:
-                        arpao_som = pygame.mixer.Sound("imagens/som_canhao.wav")
-                    else:
-                        arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
-                    arpao_som.play()                    
+                if move:
+                    if key in (K_LCTRL, K_RCTRL):
+                        self.interval = 0
+                        self.jogador.atira(self.elementos["tiros"])
+                        # arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
+                        
+                        xp = self.jogador.get_pontos()
+                        if xp <= 60:
+                            arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
+                        else:
+                            arpao_som = pygame.mixer.Sound("imagens/som_canhao.wav")
+                        arpao_som.play()                    
                     
                 if key == (K_p):
                     if __name__ == '__main__':
@@ -519,7 +521,9 @@ class Nave(ElementoSprite):
         s[1] *= 2
         if self.nivel<=3:
             Tiro(self.get_pos(), s, image, lista_de_tiros)
-        else:
+        elif self.nivel == 4:
+            Rede(self.get_pos(), s, image, lista_de_tiros)
+        elif self.nivel == 5:
             Canhao(self.get_pos(), s, image, lista_de_tiros)
 
     def alvejado(self):
@@ -725,25 +729,9 @@ class Jogador(Nave):
             if self.pontos <=30:
                 Tiro(p, s, image, lista_de_tiros, [15, 100], a)
             elif self.pontos <=60:
-                Canhao(p, s, image, lista_de_tiros, [30, 30], a)
+                Rede(p, s, image, lista_de_tiros, [60, 60], a)
             else:
-                Rede(p, s, image, lista_de_tiros, [120, 120], a)
-
-    # def atira(self, lista_de_tiros, image=None):
-    #     l = 1
-    #     if self.pontos > 10: l = 3
-    #     if self.pontos > 30: l = 5
-
-    #     p = self.get_pos()
-    #     angle = self.get_angle()
-    #     speeds = self.get_fire_speed(l, angle)
-    #     for s in speeds:
-    #         if self.pontos <=30:
-    #             Tiro(p, s, image, lista_de_tiros, [15, 100], angle)
-    #         elif self.pontos >30 and self.pontos <=60:
-    #             Canhao(p, s, image, lista_de_tiros, [30, 30], angle)
-    #         else:
-    #             Rede(p, s, image, lista_de_tiros, [120, 120], angle)
+                Canhao(p, s, image, lista_de_tiros, [30, 30], a)
 
     def get_fire_speed(self, shots, direction):
         speeds = []
