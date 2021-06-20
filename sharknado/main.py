@@ -108,6 +108,7 @@ class Jogo:
         self.arraias = []
         self.espadas = []
         self.polvos = []
+        self.tubarao = []
         pygame.init()
         self.tela = pygame.display.set_mode(size)
         self.fundo = Fundo("mar.png")
@@ -117,6 +118,10 @@ class Jogo:
         self.contador = 0
         self.spaw_espada = 1
         self.spaw_polvo = 1
+        self.spaw_Tubarao = 1
+        self.mover = True
+        self.barra = -1
+        self.tubarao_live = 150
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -142,29 +147,28 @@ class Jogo:
             enemy.set_pos([x, 0])
             self.elementos["fish"].add(enemy)
             self.arraias.append(enemy)
-            
-        # if (xp > 10):
-            
+                    
             #Espada
                   
         if (self.contador == self.spaw_espada):
             self.spaw_espada = self.contador + 200 * (random.randint(1, 5) + 5)
-            if random.randint(1, 2) == 1:
-                enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
-                enemy.set_pos([-50, pos[1]])
-            else:
-                enemy = Espada([self.screen_size[0] + 50, pos[1]], speed = (-2, 0), new_angle = -90, tempo_inicial = self.contador)
-                enemy.set_pos([self.screen_size[0] + 50, pos[1]])
-            size = enemy.get_size()
-            self.elementos["fish"].add(enemy)
-            self.espadas.append(enemy)
-            
-        if (xp > 20):
+            if self.nivel > 1:
+                if random.randint(1, 2) == 1:
+                    enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
+                    enemy.set_pos([-50, pos[1]])
+                else:
+                    enemy = Espada([self.screen_size[0] + 50, pos[1]], speed = (-2, 0), new_angle = -90, tempo_inicial = self.contador)
+                    enemy.set_pos([self.screen_size[0] + 50, pos[1]])
+                size = enemy.get_size()
+                self.elementos["fish"].add(enemy)
+                self.espadas.append(enemy)            
+        
             
             #Polvo
             
-            if self.contador == self.spaw_polvo:
-                self.spaw_polvo = self.contador + 100 * (random.randint(5, 10) + 5)
+        if self.contador == self.spaw_polvo:
+            self.spaw_polvo = self.contador + 100 * (random.randint(5, 10) + 5)
+            if self.nivel > 2:
                 if len(self.polvos) < 1:
                     r = random.randint(1, 2)
                     if r == 1:
@@ -176,6 +180,34 @@ class Jogo:
                         
                     self.elementos["fish"].add(enemy)
                     self.polvos.append(enemy)
+                    
+    def manutenção_Tubarao(self, pos):
+        Modo = self.barra
+        if self.contador == self.spaw_Tubarao:
+            boss = Tubarao([0, 0], speed=(0, 1), tempo_inicial = self.contador)
+            boss.set_pos([self.screen_size[0]/2, -400])
+            self.elementos["Shark"].add(boss)
+            self.tubarao.append(boss)
+            self.mover = False
+            
+        if len(self.tubarao) > 0:
+            boss = self.tubarao[0]
+            
+        if Modo == -1:
+                Modo = boss.parar(self.contador)
+        elif Modo == 0:
+            Modo = boss.iniciar(self.contador)
+        
+        #Jogo
+        
+        elif Modo > 0:
+            self.mover = True
+            self.tubarao_live = boss.get_lives() + 1
+            
+            if Modo == 1:
+                boss1 = 'boss'
+                
+        self.barra = Modo
 
     def muda_nivel(self):
         xp = self.jogador.get_pontos()
@@ -295,8 +327,15 @@ class Jogo:
 
         # Aumenta a pontos baseado no número de acertos:
         self.jogador.set_pontos(self.jogador.get_pontos() + len(hitted))
+        
+        acerta_boss = self.verifica_impactos(self.elementos["tiros"],
+                                        self.elementos["Shark"],
+                                        Tubarao.alvejado)
+        
+        # Aumenta a pontos baseado no número de acertos:
+        self.jogador.set_pontos(self.jogador.get_pontos() + len(hitted) + len(acerta_boss))
 
-    def trata_eventos(self):
+    def trata_eventos(self, move):
         event = pygame.event.poll()
         if event.type == pygame.QUIT:
             self.run = False               
@@ -362,6 +401,7 @@ class Jogo:
         clock = pygame.time.Clock()
         dt = 16
         self.elementos['fish'] = pygame.sprite.RenderPlain()
+        self.elementos['Shark'] = pygame.sprite.RenderPlain()
         self.jogador = Jogador([self.screen_size[0]/2, 400], 5)
         self.elementos['jogador'] = pygame.sprite.RenderPlain(self.jogador)
         self.elementos['tiros'] = pygame.sprite.RenderPlain()
@@ -373,7 +413,7 @@ class Jogo:
             
             self.remover_elementos()
             self.muda_nivel()
-            self.trata_eventos()
+            self.trata_eventos(self.mover)
             self.ação_elemento()
             
             pos = self.jogador.get_pos()
@@ -381,7 +421,7 @@ class Jogo:
             self.interval += 1
             self.contador += 1            
             
-            self.manutenção(pos)
+            self.manutenção_Tubarao(pos)
             
             for n in self.espadas:
                 n.parar(self.contador)
@@ -401,6 +441,9 @@ class Jogo:
             self.desenha_vidas()
             self.desenha_pontos()
             self.desenha_nivel()
+            
+            if self.barra > 0:    
+                self.desenha_barra(self.tubarao_live)
             pygame.display.flip()
 
     def desenha_vidas(self):
@@ -420,6 +463,24 @@ class Jogo:
         texto = fonte.render(f"Nível: {self.nivel}", True, (255, 0, 0))
         screen = pygame.display.get_surface()
         screen.blit(texto, (30, int(self.screen_size[1] * 0.12)))
+        
+    def desenha_barra(self, lives):
+      screen = pygame.display.get_surface()
+      size = self.screen_size
+      
+      
+      bar_max_size = size[0]*0.75
+      bar_pos = [size[0]*0.125, size[1]*0.9]
+      bar_size = bar_max_size*lives/150
+      R = int(200 * (200 - lives) / (50 + lives))
+      if R>200:
+          R = 200
+      G = int(200 * (50 + lives) / (200 - lives))
+      if G>200:
+          G = 200
+        
+      pygame.draw.rect(screen, (0,0,0), (bar_pos[0], bar_pos[1], bar_max_size, 30))
+      pygame.draw.rect(screen, (R, G, 50), (bar_pos[0], bar_pos[1], bar_size, 30))
 
     def musica(self):
         pygame.mixer.music.load("imagens/shark_song2.mp3")
@@ -563,6 +624,35 @@ class Polvo(Nave):
             
             shot = Tiro_Inimigo(position=minha_pos, speed=s, new_angle=a)
             return shot
+        
+class Tubarao(Nave):
+    def __init__(self, position, lives=149, speed=None, image=None, size=[150, 320],
+                 new_angle=None, tempo_inicial=None):
+        self.tempo_inicial = tempo_inicial
+        
+        if not image:
+            image = "O_tubarao.png"
+        super().__init__(position, lives, speed, image, size, new_angle)
+        
+        self.update_ = False
+        
+    def update(self, dt):
+        move_speed = (self.speed[0] * dt / 16,
+                      self.speed[1] * dt / 16)
+        self.rect = self.rect.move(move_speed)
+            
+    def parar(self, tempo):
+        if tempo == self.tempo_inicial + 350:
+            self.set_speed((0, 0)) 
+            return 0
+        else:
+            return -1
+        
+    def iniciar(self, tempo):
+        if tempo == self.tempo_inicial + 900:
+            return 1
+        else:
+            return 0        
 
 
 class Jogador(Nave):
