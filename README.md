@@ -53,7 +53,7 @@ Aqui é adicionado um novo desafio, escapar do **Peixe Espada**. Esse inimigo po
  
 ### Fase 3
  
-Com o surgimento do ** Polvo **, jatos de tinta serão lançados em direção ao seu barco. Esses jatos são tóxicos! Não deixe que eles acertem sua embarcação, ou perderá uma vida.
+Com o surgimento do **Polvo**, jatos de tinta serão lançados em direção ao seu barco. Esses jatos são tóxicos! Não deixe que eles acertem sua embarcação, ou perderá uma vida.
  
 O **Polvo** pode surgir em qualquer canto superior da tela e, diferentemente dos inimigos das fases anteriores, ele não sairá enquanto você não conseguir derrotá-lo.
  
@@ -75,7 +75,7 @@ Enquanto se prepara para atacar seu barco, o tubarão parece ser inofensivo, {..
 ### As armas disponíveis
 Em águas rasas, pescadores usam técnicas rudimentares para conseguir seus peixes. Assim como eles, você terá à sua disposição apenas um **Arpão**.
  
-À medida que a profundeza das águas aumenta, é preciso melhorar suas técnicas de defesa e, para isso, o número de ** Arpões ** será aumentado também. Nos três primeiros níveis, essa será a sua única defesa.
+À medida que a profundeza das águas aumenta, é preciso melhorar suas técnicas de defesa e, para isso, o número de **Arpões** será aumentado também. Nos três primeiros níveis, essa será a sua única defesa.
  
 Na fase 4, você terá à disposição **Redes de Pesca** gigantes (afinal, tamanho é documento) e super resistentes (ainda não disponível no planeta Terra).
  
