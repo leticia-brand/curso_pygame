@@ -73,10 +73,15 @@ Enquanto se prepara para atacar seu barco, o tubarão parece ser inofensivo, {..
 4. Lançar seus súditos do mar, os **Mini-tubarões** na direção do barco
  
 ### As armas disponíveis
-Em águas rasas, pescadores usam técnicas rudimentares para conseguir seus peixes. Assim como eles, você terá à sua disposição apenas um **Arpão**.
+Em águas rasas, pescadores usam técnicas rudimentares para conseguir seus peixes. Assim como eles, você terá à sua disposição apenas um **Arpão** nos primeiros dois níveis.
  
-À medida que a profundeza das águas aumenta, é preciso melhorar suas técnicas de defesa e, para isso, o número de **Arpões** será aumentado também. Nos três primeiros níveis, essa será a sua única defesa.
+À medida que a profundeza das águas aumenta, é preciso melhorar suas técnicas de defesa e, para isso, no nível 3 serão disponibilizadas 3 **Redes de Pesca** gigantes e com material super resistente (ainda não disponível no planeta Terra). Elas são maiores do que os arpões, por isso sua mira não precisa ser tão precisa.
+
+Na fase 4, você terá à disposição 5 **Balas de Canhão**. Aqui, agilidade é a palavra-chave.
  
-Na fase 4, você terá à disposição **Redes de Pesca** gigantes (afinal, tamanho é documento) e super resistentes (ainda não disponível no planeta Terra).
- 
-Para enfrentar o grande **Tubarão**, todo cuidado é pouco e, por isso, você será equipado com **Balas de Canhão**  . 
+Para enfrentar o grande **Tubarão**, todo cuidado é pouco e, por isso, você será equipado com **Balas de Canhão** também, afinal essa é a melhor arma de um barco de pesca em formato comercial.
+
+### As vidas
+A cada um dos níveis que você conseguir completar, sua vidas aumentarão em 3. E ao completar o nível 4, ganhará mais 6 vidas para enfrentar o tubarão. 
+
+Apesar de parecerem muitas, tome cuidado, porque tudo o que é bom dura pouco. 
