@@ -76,8 +76,6 @@ class Pause:
         screen = pygame.display.get_surface()
         screen.blit(texto_pause, (385, 150))
         
-        retangulo = pygame.draw.rect(screen, (255,255,255), (220, 300, 765, 80))
-        
         fonte2 = pygame.font.SysFont("arialblack", 50)
         texto2 = fonte2.render("Pressione C para continuar", True, (0, 0, 0))
         screen.blit(texto2, (230, 300))
@@ -122,6 +120,7 @@ class Jogo:
         self.mover = True
         self.barra = -1
         self.tubarao_live = 150
+        self.tubarao_existe = False
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
@@ -138,12 +137,10 @@ class Jogo:
         
         #Arraia
         
-        xp = self.jogador.get_pontos()
         r = random.randint(0, 100)
         x = random.randint(1, self.screen_size[0])
-        if r > (40 * len(self.elementos["fish"])):
-            enemy = Arraia([0, 0])
-            size = enemy.get_size()
+        if r > (10 * (6 - self.nivel) * len(self.arraias)):
+            enemy = Arraia([0, 0], speed = [0, 1 + self.nivel])
             enemy.set_pos([x, 0])
             self.elementos["fish"].add(enemy)
             self.arraias.append(enemy)
@@ -151,7 +148,7 @@ class Jogo:
             #Espada
                   
         if (self.contador == self.spaw_espada):
-            self.spaw_espada = self.contador + 200 * (random.randint(1, 5) + 5)
+            self.spaw_espada = self.contador + 30*(5-self.nivel)*(random.randint(1, 3) + 5)
             if self.nivel > 1:
                 if random.randint(1, 2) == 1:
                     enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
@@ -159,7 +156,6 @@ class Jogo:
                 else:
                     enemy = Espada([self.screen_size[0] + 50, pos[1]], speed = (-2, 0), new_angle = -90, tempo_inicial = self.contador)
                     enemy.set_pos([self.screen_size[0] + 50, pos[1]])
-                size = enemy.get_size()
                 self.elementos["fish"].add(enemy)
                 self.espadas.append(enemy)            
         
@@ -167,7 +163,7 @@ class Jogo:
             #Polvo
             
         if self.contador == self.spaw_polvo:
-            self.spaw_polvo = self.contador + 100 * (random.randint(5, 10) + 5)
+            self.spaw_polvo = self.contador + 20*(5-self.nivel)*(random.randint(5, 10) + 5)
             if self.nivel > 2:
                 if len(self.polvos) < 1:
                     r = random.randint(1, 2)
@@ -181,52 +177,66 @@ class Jogo:
                     self.elementos["fish"].add(enemy)
                     self.polvos.append(enemy)
                     
-    def manutenção_Tubarao(self, pos):
-        Modo = self.barra
+        for n in self.espadas:
+            n.parar(self.contador)
+            n.correr(self.contador, self.nivel)
+            
+        for m in self.polvos:
+            m.parar(self.contador)
+            tiro = m.tinta(self.contador, pos, self.nivel)
+            if tiro:
+                self.elementos["tiros_inimigo"].add(tiro)                    
+    # def manutenção_Tubarao(self, pos):
+
         if self.contador == self.spaw_Tubarao:
-            boss = Tubarao([0, 0], speed=(0, 1), tempo_inicial = self.contador)
-            boss.set_pos([self.screen_size[0]/2, -400])
-            self.elementos["Shark"].add(boss)
-            self.tubarao.append(boss)
-            self.mover = False
-            
-        if len(self.tubarao) > 0:
-            boss = self.tubarao[0]
-            
-        if Modo == -1:
-                Modo = boss.parar(self.contador)
-        elif Modo == 0:
-            Modo = boss.iniciar(self.contador)
-        
-        #Jogo
-        
-        elif Modo > 0:
-            self.mover = True
-            self.tubarao_live = boss.get_lives() + 1
-            
-            if Modo == 1:
-                boss1 = 'boss'
+            self.spaw_Tubarao = self.spaw_Tubarao +100
+            if self.nivel > 4:
+                if self.tubarao_existe == False:
+                    Modo = self.barra
+                    boss = Tubarao([0, 0], speed=(0, 1), tempo_inicial = self.contador)
+                    boss.set_pos([self.screen_size[0]/2, -400])
+                    self.elementos["Shark"].add(boss)
+                    self.tubarao.append(boss)
+                    self.mover = False
+                    self.tubarao_existe = True
                 
-        self.barra = Modo
+                    if len(self.tubarao) > 0:
+                        boss = self.tubarao[0]
+                        
+                    if Modo == -1:
+                            Modo = boss.parar(self.contador)
+                    elif Modo == 0:
+                        Modo = boss.iniciar(self.contador)
+                
+                #Jogo
+                
+                    elif Modo > 0:
+                        self.mover = True
+                        self.tubarao_live = boss.get_lives() + 1
+                        
+                        if Modo == 1:
+                            boss1 = 'boss'
+                            
+                    self.barra = Modo
 
     def muda_nivel(self):
         xp = self.jogador.get_pontos()
-        if xp > 10 and self.nivel == 1:
+        if xp > 25 and self.nivel == 1:
             self.fundo = Fundo("mar2.png")
             self.nivel = 2
             self.jogador.set_lives(self.jogador.get_lives() + 3)
-        elif xp > 20 and self.nivel == 2:
+        elif xp > 125 and self.nivel == 2:
             self.fundo = Fundo("mar3.png")
             self.nivel = 3
             self.jogador.set_lives(self.jogador.get_lives() + 3)
-        elif xp > 30 and self.nivel == 3:
+        elif xp > 300 and self.nivel == 3:
             self.fundo = Fundo("mar4.png")
             self.nivel = 4
             self.jogador.set_lives(self.jogador.get_lives() + 3)
-        elif xp > 40 and self.nivel == 4:
+        elif xp > 500 and self.nivel == 4:
             self.fundo = Fundo("mar5.png")
             self.nivel = 5
-            self.jogador.set_lives(self.jogador.get_lives() + 3)
+            self.jogador.set_lives(self.jogador.get_lives() + 6)
 
     def atualiza_elementos(self, dt):
         self.fundo.update(dt)
@@ -365,8 +375,7 @@ class Jogo:
                         self.jogador.atira(self.elementos["tiros"])
                         # arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
                         
-                        xp = self.jogador.get_pontos()
-                        if xp <= 60:
+                        if self.nivel <= 3:
                             arpao_som = pygame.mixer.Sound("imagens/arpao_sound.wav")
                         else:
                             arpao_som = pygame.mixer.Sound("imagens/som_canhao.wav")
@@ -423,17 +432,9 @@ class Jogo:
             self.interval += 1
             self.contador += 1            
             
-            self.manutenção_Tubarao(pos)
+            self.manutenção(pos)
             
-            for n in self.espadas:
-                n.parar(self.contador)
-                n.correr(self.contador)
-                
-            for m in self.polvos:
-                m.parar(self.contador)
-                tiro = m.tinta(self.contador, pos)
-                if tiro:
-                    self.elementos["tiros_inimigo"].add(tiro)
+
                                 
             # Atualiza Elementos
             self.atualiza_elementos(dt)
@@ -515,7 +516,13 @@ class Nave(ElementoSprite):
             del self
         else:
             self.set_lives(self.get_lives() - 1)
+            screen = pygame.display.get_surface()
+            while i < 500:
+                imagem = pygame.image.load("imagens/impacto.png")
+                screen.blit(imagem, (0, 0))
+								i+=1
 
+                            
     def atira(self, lista_de_tiros, image=None):
         s = list(self.get_speed())
         s[1] *= 2
@@ -589,9 +596,9 @@ class Espada(Nave):
         if tempo == self.tempo_inicial + 40:
             self.set_speed((0, 0))
             
-    def correr(self, tempo):
+    def correr(self, tempo, nivel):
         if tempo == self.tempo_inicial + 80:
-            self.set_speed((15 * (self.sentido), 0))
+            self.set_speed((5*nivel*(self.sentido), 0))
             
             
 class Polvo(Nave):
@@ -609,8 +616,8 @@ class Polvo(Nave):
         if tempo == self.tempo_inicial + 40:
             self.set_speed((0, 0))   
             
-    def tinta(self, tempo, pos):
-        if (tempo - self.tempo_inicial) % 200 == 0:
+    def tinta(self, tempo, pos, nivel):
+        if (tempo - self.tempo_inicial) % ((5-nivel) * 100 + 1) == 0: # + 1 p n morrer
             minha_pos = self.get_pos()
             s = [(pos[0] - minha_pos[0]), (pos[1] - minha_pos[1])]
                         
@@ -698,7 +705,7 @@ class Jogador(Nave):
             self.rect.top = 0
 
     def get_pos(self):
-        return (self.rect.center[0], self.rect.top)
+        return (self.rect.center)
 
     def get_pontos(self):
         return self.pontos
@@ -708,11 +715,19 @@ class Jogador(Nave):
 
     def atira(self, lista_de_tiros, image=None):
         l = 1
-        if self.pontos > 10: l = 3
-        if self.pontos > 50: l = 5
+        if self.pontos > 125: l = 3
+        if self.pontos > 300: l = 5
 
-        p = self.get_pos()
         angle = self.get_angle()
+        if angle == 0:    
+            p = (self.rect.center[0], self.rect.top)
+        if angle == 180:    
+            p = (self.rect.center[0], self.rect.bottom)
+        if angle == 90:    
+            p = (self.rect.left, (self.rect.top + self.rect.bottom)/2)
+        if angle == 270:    
+            p = (self.rect.right, (self.rect.top + self.rect.bottom)/2)
+            
         speeds = self.get_fire_speed(l, angle)
         for s in speeds:
             
@@ -726,12 +741,14 @@ class Jogador(Nave):
             else:
                 a = math.ceil(math.atan(s[0]/abs(s[1]))*180/math.pi) + 180
             
-            if self.pontos <=30:
+            if self.pontos <= 125:
                 Tiro(p, s, image, lista_de_tiros, [15, 100], a)
-            elif self.pontos <=60:
+            elif self.pontos <= 300:
                 Rede(p, s, image, lista_de_tiros, [60, 60], a)
             else:
                 Canhao(p, s, image, lista_de_tiros, [30, 30], a)
+            
+            p = self.get_pos()
 
     def get_fire_speed(self, shots, direction):
         speeds = []
