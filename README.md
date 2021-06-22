@@ -5,7 +5,7 @@ O jogo foi adaptado do Corona Shooter, disponível em: https://github.com/fccoel
  
  
 ## O Grupo
-Formado por 5 alunos de Matemática Aplicada e Ciência de Dados e Inteligência Artificial da FGV (Fundação Getúlio Vargas) EMAp (Escola de Matemática Aplicada) no 1º período como trabalho de conclusão do semestre de Introdução a Computação. São eles:
+Formado por 5 alunos de Matemática Aplicada e Ciência de Dados e Inteligência Artificial da FGV (Fundação Getúlio Vargas) EMAp (Escola de Matemática Aplicada) no 1º período como trabalho de conclusão do semestre de Introdução à Computação. São eles:
  
 André Felipe Araújo Ferreira, Darlan Augusto Farias Araújo, Letícia Brandão Gonçalves Silva, Paloma Vieira Borges e Pedro Lima Garcia.
  
@@ -24,7 +24,7 @@ Para acompanhar o jogador nessa aventura, disponibilizamos os elementos fundamen
  
 * O **nível** representa o grau de dificuldade em que o jogador se encontra. Além de acompanhá-la pelo menu, pode-se perceber essa mudança pela coloração do fundo, que é proporcional à profundidade do mar.
  
-[adicionar fundo sem jogador nem inimigos]
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase1.png)
  
 Se você for capaz de encontrar o chefão, a **barra de vida** dele será acrescentada na parte inferior da tela, indicando quanto ainda falta para que você o vença.
  
