@@ -32,31 +32,37 @@ Se você for capaz de encontrar o chefão, a **barra de vida** dele será acresc
  
 ### Como jogar
 #### Controle de movimentos
-[adicionar print do menu]
+
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/menu.png)
  
 #### A função pause
  
 Quando estiver em modo pausado, o jogador não poderá se movimentar ou se ausentar do jogo, restando apenas a possibilidade de continuar nele.
  
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/pause.png)
+
 ### Fase 1
  
 É uma fase introdutória. Contém somente um tipo de inimigo, a **Arraia**, que possui apenas uma vida. O surgimento dela, apesar de ocorrer apenas na parte superior da tela, é aleatório tanto na posição quanto nos intervalos de spawn.
  
 O único movimento dela é a descida, sendo a velocidade igual para todas as arraias .
  
-[colocar print da fase]
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase1.png)
  
 ### Fase 2
  
 Aqui é adicionado um novo desafio, escapar do **Peixe-Espada**. Esse inimigo possui a capacidade de atacar seu barco pelas laterais - ele é tão rápido que não pode ser morto. A velocidade do peixe-espada é incorporada no inimigo. Fuja dele antes que seja tarde demais!
  
- 
+ ![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase2.png)
+
 ### Fase 3
  
 Com o surgimento do **Polvo**, jatos de tinta serão lançados em direção ao seu barco. Esses jatos são tóxicos! Não deixe que eles acertem sua embarcação, ou perderá uma vida.
  
 O **Polvo** pode surgir em qualquer canto superior da tela e, diferentemente dos inimigos das fases anteriores, ele não sairá de lá enquanto você não conseguir derrotá-lo.
  
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase3.png)
+
 ### Fase 4
  
 Em águas um pouco mais profundas, os inimigos se multiplicam com mais facilidade e são mais rápidos (ou será que você está mais lento?)
