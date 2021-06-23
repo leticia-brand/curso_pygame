@@ -76,6 +76,8 @@ class Pause:
         screen = pygame.display.get_surface()
         screen.blit(texto_pause, (385, 150))
         
+        #retangulo = pygame.draw.rect(screen, (255,255,255), (220, 300, 765, 80))
+        
         fonte2 = pygame.font.SysFont("arialblack", 50)
         texto2 = fonte2.render("Pressione C para continuar", True, (0, 0, 0))
         screen.blit(texto2, (230, 300))
@@ -121,13 +123,19 @@ class Jogo:
         self.barra = -1
         self.tubarao_live = 150
         self.tubarao_existe = False
+        self.spaw_pos_mini_tubarao = 0
+        self.spaw_espada_tubarao_run = False
+        self.spaw_espada_tubarao = 0
+        self.test = 0
+        self.repetir_mini_tubarao = False
+        self.lista_modo = 0
         flags = DOUBLEBUF
         if fullscreen:
             flags |= FULLSCREEN
 
         self.screen_size = self.tela.get_size()
         pygame.mouse.set_visible(0)
-        pygame.display.set_caption('Corona Shooter')
+        pygame.display.set_caption("Sharknado")
         self.run = True
 
     def set_pos(self, tiro):
@@ -135,89 +143,227 @@ class Jogo:
 
     def manutenção(self, pos):
         
-        #Arraia
+        if self.nivel<5:
         
-        r = random.randint(0, 100)
-        x = random.randint(1, self.screen_size[0])
-        if r > (10 * (6 - self.nivel) * len(self.arraias)):
-            enemy = Arraia([0, 0], speed = [0, 1 + self.nivel])
-            enemy.set_pos([x, 0])
-            self.elementos["fish"].add(enemy)
-            self.arraias.append(enemy)
-                    
-            #Espada
-                  
-        if (self.contador == self.spaw_espada):
-            self.spaw_espada = self.contador + 30*(5-self.nivel)*(random.randint(1, 3) + 5)
-            if self.nivel > 1:
-                if random.randint(1, 2) == 1:
-                    enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
-                    enemy.set_pos([-50, pos[1]])
-                else:
-                    enemy = Espada([self.screen_size[0] + 50, pos[1]], speed = (-2, 0), new_angle = -90, tempo_inicial = self.contador)
-                    enemy.set_pos([self.screen_size[0] + 50, pos[1]])
+            #Arraia
+            
+            r = random.randint(0, 100)
+            x = random.randint(1, self.screen_size[0])
+            if r > (10 * (6 - self.nivel) * len(self.arraias)):
+                enemy = Arraia([0, 0], speed = [0, 1 + self.nivel])
+                enemy.set_pos([x, 0])
                 self.elementos["fish"].add(enemy)
-                self.espadas.append(enemy)            
-        
-            
-            #Polvo
-            
-        if self.contador == self.spaw_polvo:
-            self.spaw_polvo = self.contador + 20*(5-self.nivel)*(random.randint(5, 10) + 5)
-            if self.nivel > 2:
-                if len(self.polvos) < 1:
-                    r = random.randint(1, 2)
-                    if r == 1:
-                        enemy = Polvo([-50, -50], lives=4, speed = (2, 2), tempo_inicial = self.contador)
-                        enemy.set_pos([-50, -50])
-                    elif r == 2:
-                        enemy = Polvo([self.screen_size[0] + 50, -50], lives=4, speed = (-2, 2), tempo_inicial = self.contador)
-                        enemy.set_pos([self.screen_size[0] + 50, -50])
+                self.arraias.append(enemy)
                         
+                #Espada
+                      
+            if (self.contador == self.spaw_espada):
+                self.spaw_espada = self.contador + 30*(5-self.nivel)*(random.randint(1, 3) + 5)
+                if self.nivel > 1:
+                    if random.randint(1, 2) == 1:
+                        enemy = Espada([-50, pos[1]], speed = (2, 0), new_angle = 90, tempo_inicial = self.contador)
+                        enemy.set_pos([-50, pos[1]])
+                    else:
+                        enemy = Espada([self.screen_size[0] + 50, pos[1]], speed = (-2, 0), new_angle = -90, tempo_inicial = self.contador)
+                        enemy.set_pos([self.screen_size[0] + 50, pos[1]])
                     self.elementos["fish"].add(enemy)
-                    self.polvos.append(enemy)
-                    
+                    self.espadas.append(enemy)            
+            
+                
+                #Polvo
+                
+            if self.contador == self.spaw_polvo:
+                self.spaw_polvo = self.contador + 20*(5-self.nivel)*(random.randint(5, 10) + 5)
+                if self.nivel > 2:
+                    if len(self.polvos) < 1:
+                        r = random.randint(1, 2)
+                        if r == 1:
+                            enemy = Polvo([-50, -50], lives=4, speed = (2, 2), tempo_inicial = self.contador)
+                            enemy.set_pos([-50, -50])
+                        elif r == 2:
+                            enemy = Polvo([self.screen_size[0] + 50, -50], speed = (-2, 2), tempo_inicial = self.contador)
+                            enemy.set_pos([self.screen_size[0] + 50, -50])
+                            
+                        self.elementos["fish"].add(enemy)
+                        self.polvos.append(enemy)
+                        
+            
+                        
         for n in self.espadas:
             n.parar(self.contador)
             n.correr(self.contador, self.nivel)
+            if self.nivel==5:
+                s = n.get_speed()
+                n.set_speed([-2*s[0], s[1]])
             
-        for m in self.polvos:
-            m.parar(self.contador)
-            tiro = m.tinta(self.contador, pos, self.nivel)
-            if tiro:
-                self.elementos["tiros_inimigo"].add(tiro)                    
-    # def manutenção_Tubarao(self, pos):
-
-        if self.contador == self.spaw_Tubarao:
-            self.spaw_Tubarao = self.spaw_Tubarao +100
-            if self.nivel > 4:
-                if self.tubarao_existe == False:
-                    Modo = self.barra
+        for n in self.polvos:
+            n.parar(self.contador)
+            tiro = n.tinta(self.contador, pos, self.nivel)
+            if tiro and self.nivel<5:
+                self.elementos["tiros_inimigo"].add(tiro)  
+            if self.nivel==5:
+                n.set_speed([0, -3])
+                  
+        # Tubarao
+        
+        if self.nivel == 5:
+            Modo = self.barra
+            if self.tubarao_existe == False:
+                self.spaw_Tubarao = self.contador
+                self.tubarao_existe = True
+                
+            if self.tubarao_existe:
+                    
+                if self.contador == self.spaw_Tubarao:
                     boss = Tubarao([0, 0], speed=(0, 1), tempo_inicial = self.contador)
                     boss.set_pos([self.screen_size[0]/2, -400])
                     self.elementos["Shark"].add(boss)
                     self.tubarao.append(boss)
-                    self.mover = False
-                    self.tubarao_existe = True
-                
-                    if len(self.tubarao) > 0:
-                        boss = self.tubarao[0]
+                    self.mover = False                        
+                    
+                if len(self.tubarao) > 0:
+                    boss = self.tubarao[0]
+                    
+                if Modo == -1:
+                        Modo = boss.parar(self.contador)
+                        self.jogador.set_speed([0, 1])
+
+                elif Modo == 0:
+                    Modo = boss.iniciar(self.contador)
+                    if Modo == 1:
+                        boss.tempo_inicial = self.contador
                         
-                    if Modo == -1:
-                            Modo = boss.parar(self.contador)
-                    elif Modo == 0:
-                        Modo = boss.iniciar(self.contador)
-                
-                #Jogo
-                
-                    elif Modo > 0:
-                        self.mover = True
-                        self.tubarao_live = boss.get_lives() + 1
+                elif Modo > 0:
+                    self.mover = True
+                    self.tubarao_live = boss.get_lives() + 1
+                    mod = int(4 - (self.tubarao_live/50))
+        
+                    if Modo == 1:
+                        boss.set_speed([0, 0])
+                        lista_modo = [3, 4, 5]
+                        i = 1
+                        while i<mod:
+                            lista_modo.append(random.randint(3, 5))
+                            i += 1
                         
-                        if Modo == 1:
-                            boss1 = 'boss'
+                        iniciar = boss.parar(self.contador + 100)
+                        
+                        self.lista_modo = lista_modo
+                        
+                        if iniciar==0:
+                            boss.set_speed([0, -1])
+                            Modo = 2
+                            boss.tempo_inicial = self.contador
                             
-                    self.barra = Modo
+                        
+                    elif Modo == 2:
+                        
+                        parar = boss.parar(self.contador)
+                        if parar == 0:
+                            ID = random.randint(1, len(self.lista_modo))
+                            Modo = self.lista_modo[ID-1]
+                            del self.lista_modo[ID-1]                
+                        else:
+                            Modo = 2
+                            
+                    elif Modo == 3:
+                        seguir = boss.seguir(pos, self.contador,  self.screen_size)
+                        
+                        if seguir:
+                            boss.perseguir = False
+                            if len(self.lista_modo)>0:
+                                ID = random.randint(1, len(self.lista_modo))
+                                Modo = self.lista_modo[ID-1]
+                                del self.lista_modo[ID-1]
+                            else:
+                                boss.set_pos([self.screen_size[0]/2, -400])
+                                boss.set_speed([0, 1])
+                                old_angle = boss.get_angle()
+                                boss.tempo_inicial = self.contador
+                                boss.rotate(old_angle, 0)
+                                Modo = 6
+                        
+                    elif Modo == 4:
+                        arrancar = boss.arrancada(pos, self.contador, self.screen_size)
+                        
+                        if arrancar:
+                            boss.repetir_arrancada = False
+                            if len(self.lista_modo)>0:
+                                ID = random.randint(1, len(self.lista_modo))
+                                Modo = self.lista_modo[ID-1]
+                                del self.lista_modo[ID-1]
+                            else:
+                                boss.set_pos([self.screen_size[0]/2, -400])
+                                boss.set_speed([0, 1])
+                                old_angle = boss.get_angle()
+                                boss.tempo_inicial = self.contador
+                                boss.rotate(old_angle, 0)
+                                Modo = 6
+                        
+                    elif Modo == 5:
+                        
+                        if self.repetir_mini_tubarao == False:
+                            self.repetir_mini_tubarao_num = mod + 2
+                            self.repetir_mini_tubarao = True
+                        
+                        if self.repetir_mini_tubarao_num > 0:
+                            
+                            boss.set_pos([self.screen_size[0]/2, -400])
+                            
+                            if self.spaw_espada_tubarao_run == False:
+                                self.spaw_espada_tubarao = self.contador
+                                self.spaw_espada_tubarao_run = True
+                                
+                            if (self.contador - self.spaw_espada_tubarao)%25 == 0:
+                                c = int(self.screen_size[0]/(2*mod))
+                                if self.spaw_pos_mini_tubarao < self.screen_size[0]:
+                                                                                    
+                                    enemy = Tubarao_mini([0, 0], speed = (0, 10), new_angle = 0)
+                                    enemy.set_pos([self.spaw_pos_mini_tubarao, -50])
+                                    self.elementos["fish"].add(enemy)
+                                    self.tubarao.append(enemy)
+                                    
+                                    self.spaw_pos_mini_tubarao += c
+                                    
+                                else:
+                                    self.spaw_pos_mini_tubarao = c*random.randint(-3, 3)/3
+                                    self.repetir_mini_tubarao_num -= 1
+                            mini_tubarao = False
+                        else:
+                            mini_tubarao = True
+                                        
+                        if mini_tubarao:
+                            self.repetir_mini_tubarao = False
+                            self.spaw_espada_tubarao_run = False
+                            if len(self.lista_modo)>0:
+                                ID = random.randint(1, len(self.lista_modo))
+                                Modo = self.lista_modo[ID-1]
+                                del self.lista_modo[ID-1]
+                            else:
+                                boss.set_pos([self.screen_size[0]/2, -400])
+                                boss.set_speed([0, 1])
+                                old_angle = boss.get_angle()
+                                boss.tempo_inicial = self.contador
+                                boss.rotate(old_angle, 0)
+                                Modo = 6
+                                
+                    elif Modo == 6:
+                        parar = boss.parar(self.contador)
+                        if parar == 0:
+                            Modo = 1
+                            boss.tempo_inicial = self.contador
+                        else:
+                            Modo = 6
+
+                self.barra = Modo
+
+                    
+                    
+        #Jogador
+        
+        self.jogador.fantasma(self.contador)
+
+                    
 
     def muda_nivel(self):
         xp = self.jogador.get_pontos()
@@ -249,17 +395,25 @@ class Jogo:
             v.draw(self.tela)
 
     def verifica_impactos(self, elemento, list, action):
+        
         if isinstance(elemento, pygame.sprite.RenderPlain):
             hitted = pygame.sprite.groupcollide(elemento, list, 1, 0)
             for v in hitted.values():
                 for o in v:
-                    action(o)
+                    action(o, self.contador)
             return hitted
-
-        elif isinstance(elemento, pygame.sprite.Sprite):
-            if pygame.sprite.spritecollide(elemento, list, 1):
-                action()
-            return elemento.morto
+        elif elemento.hit_box:
+            if isinstance(elemento, pygame.sprite.Sprite):
+                if pygame.sprite.spritecollide(elemento, list, 1):
+                    action(self.contador)
+                return elemento.morto
+            
+    def verifica_impactos_boss(self, elemento, list, action):
+        if elemento.hit_box:
+            if isinstance(elemento, pygame.sprite.Sprite):
+                if pygame.sprite.spritecollide(elemento, list, 0):
+                    action(self.contador)
+                return elemento.morto
 
     def ação_elemento(self):
         self.verifica_impactos(self.jogador, self.elementos["tiros_inimigo"],
@@ -294,7 +448,6 @@ class Jogo:
                             morto = "menu"
                             
 
-            return
 
         # Verifica se o personagem trombou em algum inimigo
         self.verifica_impactos(self.jogador, self.elementos["fish"],
@@ -327,7 +480,6 @@ class Jogo:
                     if key == K_KP_ENTER or key == K_RETURN:
                             self.run = False
                             morto = "menu"
-            return
         
         # Verifica se o personagem atingiu algum alvo.
         hitted = self.verifica_impactos(self.elementos["tiros"],
@@ -336,14 +488,16 @@ class Jogo:
         
 
         # Aumenta a pontos baseado no número de acertos:
-        self.jogador.set_pontos(self.jogador.get_pontos() + len(hitted))
         
         acerta_boss = self.verifica_impactos(self.elementos["tiros"],
                                         self.elementos["Shark"],
                                         Tubarao.alvejado)
         
+        self.verifica_impactos_boss(self.jogador, self.elementos["Shark"],
+                                                    self.jogador.colisão)
+        
         # Aumenta a pontos baseado no número de acertos:
-        self.jogador.set_pontos(self.jogador.get_pontos() + len(hitted) + len(acerta_boss))
+        self.jogador.set_pontos(self.jogador.get_pontos() + len(hitted) + 4*len(acerta_boss))
 
     def trata_eventos(self, move):
         event = pygame.event.poll()
@@ -444,6 +598,8 @@ class Jogo:
             self.desenha_vidas()
             self.desenha_pontos()
             self.desenha_nivel()
+            if self.tubarao_live <= 1:
+                self.desenha_vitoria()
             
             if self.barra > 0:    
                 self.desenha_barra(self.tubarao_live)
@@ -466,6 +622,34 @@ class Jogo:
         texto = fonte.render(f"Nível: {self.nivel}", True, (255, 0, 0))
         screen = pygame.display.get_surface()
         screen.blit(texto, (30, int(self.screen_size[1] * 0.12)))
+    
+    def desenha_vitoria(self):
+            ganhou = "status"
+            while ganhou =="status":
+                
+                fonte1 = pygame.font.SysFont("arialblack", 80)
+                texto_over = fonte1.render("PARABÉNS", True, (200, 0, 0))
+                screen = pygame.display.get_surface()
+                screen.blit(texto_over, (335.5, 50))
+        
+        
+                fonte2 = pygame.font.SysFont("arialblack", 50)
+                texto2 = fonte2.render("Pressione Enter para retornar ao menu", True, (0, 0, 0))
+                screen.blit(texto2, (74, 500))
+                imagem = pygame.image.load("imagens/vitoria.png")
+                screen.blit(imagem, (289, 230))
+                
+                pygame.display.flip()
+            
+                event = pygame.event.poll()
+                if event.type == pygame.QUIT:
+                    self.run = False 
+                if event.type == pygame.KEYDOWN:
+                    key = event.key
+                    if key == K_KP_ENTER or key == K_RETURN:
+                            self.run = False
+                            ganhou = "menu"
+                
         
     def desenha_barra(self, lives):
       screen = pygame.display.get_surface()
@@ -510,19 +694,28 @@ class Nave(ElementoSprite):
     def set_lives(self, lives):
         self.lives = lives
 
-    def colisão(self):
+    def colisão(self, tempo):
         if self.get_lives() < 1:
             self.kill()
             del self
         else:
             self.set_lives(self.get_lives() - 1)
-            screen = pygame.display.get_surface()
-            while i < 500:
-                imagem = pygame.image.load("imagens/impacto.png")
-                screen.blit(imagem, (0, 0))
-								i+=1
+        self.hit_box = False
+        self.tempo_fantasma = tempo
+        
+    def fantasma(self, tempo):
+        if self.hit_box == False:
+            if (tempo - self.tempo_fantasma) < 100:
+                    
+                if (tempo - self.tempo_fantasma)% 5 == 0:
+                    if (int((tempo - self.tempo_fantasma)/10))% 2 == 0:
+                        self.opacidade(0)
+                    else:
+                        self.opacidade(255)
+            else:
+                self.opacidade(255)
+                self.hit_box = True
 
-                            
     def atira(self, lista_de_tiros, image=None):
         s = list(self.get_speed())
         s[1] *= 2
@@ -533,11 +726,13 @@ class Nave(ElementoSprite):
         elif self.nivel == 5:
             Canhao(self.get_pos(), s, image, lista_de_tiros)
 
-    def alvejado(self):
+    def alvejado(self, tempo):
         if self.get_lives() < 1:
             self.kill()
         else:
             self.set_lives(self.get_lives() - 1)
+        self.hit_box = False
+        self.tempo_fantasma = tempo
 
     @property
     def morto(self):
@@ -602,7 +797,7 @@ class Espada(Nave):
             
             
 class Polvo(Nave):
-    def __init__(self, position, lives=2, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
+    def __init__(self, position, lives=4, speed=None, image=None, size=(120, 120), new_angle=None, tempo_inicial=None):
         
         self.tempo_inicial = tempo_inicial
         self.sentido = speed[0]/abs(speed[0])
@@ -642,10 +837,13 @@ class Tubarao(Nave):
         self.tempo_inicial = tempo_inicial
         
         if not image:
-            image = "O_tubarao.png"
+            image = "tubarao(boss).png"
         super().__init__(position, lives, speed, image, size, new_angle)
         
         self.update_ = False
+        self.correr = False
+        self.perseguir = False
+        self.repetir_arrancada = False
         
     def update(self, dt):
         move_speed = (self.speed[0] * dt / 16,
@@ -660,10 +858,132 @@ class Tubarao(Nave):
             return -1
         
     def iniciar(self, tempo):
-        if tempo == self.tempo_inicial + 900:
+        if tempo == self.tempo_inicial + 600:
             return 1
         else:
-            return 0        
+            return 0
+
+    def seguir(self, pos, tempo, screen_size):
+        
+        mod = int(4 - (self.lives/50))
+        minha_pos = self.get_pos()
+        
+        if self.perseguir == False:
+            self.tempo_perseguir = tempo + 100 *(10 + 5*mod)
+            self.set_pos([screen_size[0]/2, -159])
+            self.perseguir = True
+            
+        if tempo < self.tempo_perseguir:
+                        
+            distancia = [(pos[0] - minha_pos[0]), (pos[1] - minha_pos[1])]
+                        
+            if abs(distancia[0])<abs(distancia[1]):
+                if distancia[1]>0:
+                    speed = [0, 1*mod]
+                    angle = 0
+                else:
+                    speed = [0, -1*mod]
+                    angle = 180
+            else:
+                if distancia[0]>0:
+                    speed = [1*mod, 0]
+                    angle = 90
+                else:
+                    speed = [-1*mod, 0]
+                    angle = 270
+                    
+            old_angle = self.get_angle()
+            
+            self.rotate(old_angle, angle)
+            self.set_speed(speed)
+            return False
+            
+        if (minha_pos[0] > screen_size[0] + 160) or (minha_pos[0] < -160) or (minha_pos[1] > screen_size[1] + 160) or (minha_pos[1] < -160):
+            return True
+        else:
+            return False
+            
+        
+    def arrancada(self, pos, tempo, screen_size):
+        
+        mod = int(4 - (self.lives/50))
+        minha_pos = self.get_pos()
+        
+        if self.repetir_arrancada == False:
+            self.repetir_arrancada_num = 2*mod + 3
+            self.repetir_arrancada = True
+            
+        
+        if self.repetir_arrancada_num > 0:
+
+            if self.correr == False:
+                
+                self.set_speed([0, 0])
+                r = random.randint(1, 4)
+                self.direction = r
+                            
+                if r==1:
+                    self.set_pos([-160, pos[1]])
+                    angle = 90
+                    
+                elif r== 2:
+                    self.set_pos([pos[0], -160])
+                    angle = 0
+                    
+                elif r== 3:
+                    self.set_pos([screen_size[0] + 160, pos[1]])
+                    angle = 270
+                    
+                else:
+                    self.set_pos([pos[0], screen_size[1] + 160])
+                    angle = 180
+                    
+                self.tempo_correr = tempo + 10 * (6 - mod) * random.randint(3, 4)
+                old_angle = self.get_angle()
+                self.rotate(old_angle, angle)
+                self.correr = True
+                
+            else:
+                r = self.direction
+                if r == 1:
+                    if tempo == self.tempo_correr:
+                        self.set_speed([mod*5, 0])
+                    if minha_pos[0] > screen_size[0] + 160:
+                        self.repetir_arrancada_num -= 1
+                        self.correr = False
+    
+                elif r == 2:
+                    if tempo == self.tempo_correr:
+                        self.set_speed([0, mod*5])
+                    if minha_pos[1] > screen_size[1] + 160:
+                        self.repetir_arrancada_num -= 1
+                        self.correr = False
+                    
+                elif r == 3:
+                    if tempo == self.tempo_correr:
+                        self.set_speed([-mod*5, 0])
+                    if minha_pos[0] < -160:
+                        self.repetir_arrancada_num -= 1
+                        self.correr = False
+                        
+                else:
+                    if tempo == self.tempo_correr:
+                        self.set_speed([0, -mod*5])
+                    if minha_pos[1] < -160:
+                        self.repetir_arrancada_num -= 1
+                        self.correr = False
+                
+            return False
+        
+        else:
+            return True 
+                        
+                                
+class Tubarao_mini(Nave):
+    def __init__(self, position, lives=9, speed=None, image=None, size=(50, 115), new_angle=None):
+        if not image:
+            image = "tubarao(boss).png"
+        super().__init__(position, lives, speed, image, size, new_angle)   
 
 
 class Jogador(Nave):
@@ -687,6 +1007,7 @@ class Jogador(Nave):
             image = "barco.png"
         super().__init__(position, lives, [0, 0], image, new_size, new_angle)
         self.pontos = 0
+        self.hit_box = True
 
     def update(self, dt):
         move_speed = (self.speed[0] * dt / 16, self.speed[1] * dt / 16)
