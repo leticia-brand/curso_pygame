@@ -24,11 +24,11 @@ Para acompanhar o jogador nessa aventura, disponibilizamos os elementos fundamen
  
 * O **nível** representa o grau de dificuldade em que o jogador se encontra. Além de acompanhá-la pelo menu, pode-se perceber essa mudança pela coloração do fundo, que é proporcional à profundidade do mar.
  
-![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase1.png)
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/vpn.png)
  
 Se você for capaz de encontrar o chefão, a **barra de vida** dele será acrescentada na parte inferior da tela, indicando quanto ainda falta para que você o vença.
  
-[adicionar barra de vida]
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/barra_vida.png)
  
 ### Como jogar
 #### Controle de movimentos
@@ -79,6 +79,8 @@ Enquanto se prepara para atacar seu barco, o tubarão parece ser inofensivo, {..
 2. Ataque surpresa e veloz, tanto pela vertical quanto pela horizontal
 3. Lançar seus súditos do mar, os **Mini-tubarões** na direção do barco
  
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase5.png)
+
 ### As armas disponíveis
 Em águas rasas, pescadores usam técnicas rudimentares para conseguir seus peixes. Assim como eles, você terá à sua disposição apenas um **Arpão** nos primeiros dois níveis.
  
