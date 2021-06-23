@@ -8,12 +8,16 @@ class Fundo:
     Esta classe cria o fundo do jogo
     """
 
-    def __init__(self, image="mar.png"):
+    def __init__(self, image):
         """
         Desenha o fundo da tela
         """
         image = os.path.join('imagens', image)
         image = pygame.image.load(image).convert()
+        
+        icone = os.path.join('imagens', 'icone.jpg')
+        icone = pygame.image.load(icone).convert()
+        pygame.display.set_icon(icone)
 
         self.imagesize = image.get_size()
         self.pos = [0, -1 * self.imagesize[1]]
@@ -42,5 +46,3 @@ class Fundo:
 
     def draw(self, screen):
         screen.blit(self.image, self.pos)
-
-
