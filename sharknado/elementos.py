@@ -11,6 +11,7 @@ class ElementoSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.angle = 0
+        self.uptade_ = True
         if isinstance(self.image, str):
             self.image = os.path.join('imagens', self.image)
             self.image = pygame.image.load(self.image)
@@ -27,15 +28,18 @@ class ElementoSprite(pygame.sprite.Sprite):
         self.set_speed(speed or (0, 2))
         
     def update(self, dt):
-        move_speed = (self.speed[0] * dt / 16,
-                      self.speed[1] * dt / 16)
-        self.rect = self.rect.move(move_speed)
-        if (self.rect.left > self.area.right) or \
-                (self.rect.top > self.area.bottom) or \
-                (self.rect.right < 0):
-            self.kill()
-        if (self.rect.bottom < - 40):
-            self.kill()
+        
+        if self.uptade_ == True:
+            
+            move_speed = (self.speed[0] * dt / 16,
+                          self.speed[1] * dt / 16)
+            self.rect = self.rect.move(move_speed)
+            if (self.rect.left > self.area.right) or \
+                    (self.rect.top > self.area.bottom) or \
+                    (self.rect.right < 0):
+                self.kill()
+            if (self.rect.bottom < - 40):
+                self.kill()
 
     def get_speed(self):
         return self.speed
@@ -44,8 +48,7 @@ class ElementoSprite(pygame.sprite.Sprite):
         self.speed = speed
 
     def get_pos(self):
-        return (self.rect.center[0],
-                self.rect.center[1])
+        return (self.rect.center[0], self.rect.center[1])
 
     def set_pos(self, pos):
         self.rect.center = (pos[0], pos[1])
@@ -62,8 +65,8 @@ class ElementoSprite(pygame.sprite.Sprite):
     def rotate_inicial(self, new_angle):
         self.image = pygame.transform.rotate(self.image, new_angle)
         
-    def mudar_cor(self):
-        self.image = pygame.Surface.set_colorkey(self.image,(255,255,255))
+    def opacidade(self, alpha):
+        self.image.set_alpha(alpha)
         
     def rotate(self, old_angle, new_angle):
         angle = new_angle - old_angle

@@ -67,6 +67,8 @@ O **Polvo** pode surgir em qualquer canto superior da tela e, diferentemente dos
  
 Em águas um pouco mais profundas, os inimigos se multiplicam com mais facilidade e são mais rápidos (ou será que você está mais lento?)
  
+![Screenshot](https://github.com/leticia-brand/curso_pygame/blob/main/sharknado/imagens/fase4.png)
+
 ### Fase 5
  
 Essa é a fase final e o maior desafio do jogo. O **Tubarão** é um dos animais mais perigosos do oceano. Destrua-o antes que seja tarde demais!
@@ -74,9 +76,8 @@ Essa é a fase final e o maior desafio do jogo. O **Tubarão** é um dos animais
 Enquanto se prepara para atacar seu barco, o tubarão parece ser inofensivo, {...}. Tome cuidado, pois quando menos esperar, ele poderá atacar sua embarcação de várias maneiras:
  
 1. Seguir o barco para onde quer que você for
-2. Deixar o barco preso no centro da tela
-3. Ataque surpresa e veloz, tanto pela vertical quanto pela horizontal
-4. Lançar seus súditos do mar, os **Mini-tubarões** na direção do barco
+2. Ataque surpresa e veloz, tanto pela vertical quanto pela horizontal
+3. Lançar seus súditos do mar, os **Mini-tubarões** na direção do barco
  
 ### As armas disponíveis
 Em águas rasas, pescadores usam técnicas rudimentares para conseguir seus peixes. Assim como eles, você terá à sua disposição apenas um **Arpão** nos primeiros dois níveis.
@@ -88,6 +89,12 @@ Na fase 4, você terá à disposição 5 **Balas de Canhão**. Aqui, agilidade �
 Para enfrentar o grande **Tubarão**, todo cuidado é pouco e, por isso, você será equipado com **Balas de Canhão** também, afinal, essa é a melhor arma de um barco de pesca em formato comercial.
 
 ### As vidas
-A cada um dos níveis que você conseguir completar, sua vidas aumentarão em 3. E ao completar o nível 4, ganhará mais 6 vidas para enfrentar o tubarão. 
+A cada um dos níveis que você conseguir completar, sua vidas aumentarão em **3**. E ao completar o nível 4, ganhará mais **6** vidas para enfrentar o tubarão. 
 
 Apesar de parecerem muitas, tome cuidado, porque tudo o que é bom dura pouco. 
+
+## Detalhes técnicos
+* A **Arraia** tem 1 vida
+* O **Peixe Espada** tem 10 vidas
+* O **Polvo** tem 5 vidas
+* O **Tubarão** tem 150 vidas
